@@ -1,0 +1,62 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NP-likeness scorer</title>
+</head>
+<body>
+<h1>Natural Product Likeness Score calculator</h1>
+
+<div>
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <table>
+            <tr><td>Molecular file to upload <small>(Accepted formats: SDF, MOL, SMILES)</small>:</td><td><input type="file" name="file" /></td></tr>
+            <tr><td></td><td><input type="submit" value="Upload & start scorer" /></td></tr>
+        </table>
+    </form>
+</div>
+
+<div th:if="${not #lists.isEmpty(files)}">
+    Uploaded files:
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="${file}" th:text="${file}" />
+        </li>
+    </ul>
+</div>
+
+<div th:if="${uploadSuccessful}">
+    <h1 th:text="${uploadSuccessful}"/>
+</div>
+
+<div th:if="${workerStarted}">
+    <h1 th:text="${workerStarted}"/>
+</div>
+
+
+<div th:if="${noFileError}">
+    <h2 th:text="${noFileError}"/>
+</div>
+
+
+<div th:if="${badFileType}">
+    <h2 th:text="${badFileType}"/>
+</div>
+
+
+
+
+<!--
+<div>
+    Scores:
+    <ul>
+        <li th:each="score : ${scores}">
+            <p th:text="${score}" />
+        </li>
+    </ul>
+</div>
+-->
+
+
+</body>
+</html>
