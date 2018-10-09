@@ -1,16 +1,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
+<head lang="en">
+    <meta charset="UTF-8"/>
     <title>NP-likeness scorer</title>
+    <link rel="stylesheet" href="/main.css" />
 </head>
+
+
+
+
+
+
 <body>
 <h1>Natural Product Likeness Score calculator</h1>
 
 <div>
     <form method="POST" enctype="multipart/form-data" action="/">
         <table>
-            <tr><td>Molecular file to upload <small>(Accepted formats: SDF, MOL, SMILES)</small>:</td><td><input type="file" name="file" /></td></tr>
+            <tr><td>Molecular file to upload <small>(Accepted formats: SDF, MOL, SMILES. Max number of molecules: 200)</small>:</td><td><input type="file" name="file" /></td></tr>
             <tr><td></td><td><input type="submit" value="Upload & start scorer" /></td></tr>
         </table>
     </form>
@@ -24,6 +31,9 @@
         </li>
     </ul>
 </div>
+
+
+
 
 <div th:if="${uploadSuccessful}">
     <h1 th:text="${uploadSuccessful}"/>
@@ -44,9 +54,21 @@
 </div>
 
 
+<div th:if="${fileAlreadySubmitted}">
+    <h2 th:text="${fileAlreadySubmitted}"/>
+</div>
+
+
 
 
 <!--
+<div id="react"></div>
+
+<script src="built/bundle.js"></script>
+
+
+
+
 <div>
     Scores:
     <ul>

@@ -1,0 +1,163 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NP-likeness scorer - Results</title>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+
+<div th:if="${numberOfProcessedMolecules}">
+    <h2>Processing <span th:text="${numberOfProcessedMolecules}">0</span> molecules </h2>
+</div>
+
+
+<div>
+    Scores in this session:
+    <ul>
+        <li th:each="score : ${scores}">
+            <p th:text="${score.getUu_id()}" />
+            <ul>
+                <li th:text="${ 'NPL score: ' + #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }" />
+                <li th:text="${ 'NPL score (with sugar): ' + #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }" />
+                <li th:text="${ 'SML score: ' + #numbers.formatDecimal(score.getSml_score(), 1, 2 )  }" />
+                <li th:text="${ 'SML score (with sugar): ' + #numbers.formatDecimal(score.getSml_sugar_score(), 1, 2 )  }" />
+            </ul>
+        </li>
+    </ul>
+</div>
+
+
+<div id="npPanel" style="width: 800px; height: 450px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // ***************************************
+    //getting data from Spring Controller
+    let npXdata = /*[[${npXdataNP}]]*/ 'default';
+    let npYdata = /*[[${npYdataNP}]]*/ 'default';
+
+    let npXdataSM = /*[[${npXdataSM}]]*/ 'default';
+    let npYdataSM = /*[[${npYdataSM}]]*/ 'default';
+
+
+    let scoresObject = /*[[${scores}]]*/ 'default';
+
+    // data obtained
+    // ***************************************
+
+
+
+    console.log( Plotly.BUILD );
+
+    // ***************************************
+    //building object to trace for computed scores
+
+    let xnpuser = new Array();
+    let ynpuser = new Array();
+    let tnpuser = new Array();
+
+    console.log(scoresObject);
+
+    for(var i = 0; i< scoresObject.length; i++){
+        score = scoresObject[i];
+        xnpuser.push( Number(( score.npl_score).toFixed(2)) );
+
+        //ynpuser.push( npYdata[npXdata.indexOf( Number(( score.npl_score).toFixed(1)) ) ]);
+
+        ynpuser.push(-0.01);
+        tnpuser.push(score.uu_id);
+    }
+
+    var traceComputedNPscoresNP = {
+        x: xnpuser,
+        y: ynpuser,
+        mode: 'markers',
+        name: 'Computed scores',
+        text: tnpuser,
+        //textposition: 'top',
+        type: 'scatter',
+        hoverinfo:'text',
+        marker: {
+            color: 'rgb(255, 0, 0)',
+            size: 12,
+            line: {
+                color: 'rgb(153, 0, 0)',
+                width: 1
+            }
+        }
+    };
+    // ***************************************
+
+    // ***************************************
+    // building object to trace for all NP
+    var traceNP = {
+        x: npXdata,
+        y: npYdata ,
+        mode: 'lines',
+        name: 'Natural Products',
+        line: {
+            shape: 'spline',
+            color: 'rgb(0, 152, 76)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // ***************************************
+
+    // ***************************************
+    // building object to trace for all SM
+
+    var traceSM = {
+        x: npXdataSM,
+        y: npYdataSM ,
+        mode: 'lines',
+        name: 'Synthetic Products',
+        line: {
+            shape: 'spline',
+            color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+
+    // ***************************************
+
+
+    // ***************************************
+    // Prepare and plot
+
+    let data = [traceNP, traceSM, traceComputedNPscoresNP];
+
+    let layout = {
+
+        title: "Natural Product Likeness Score Distribution",
+        xaxis: {title: "Natural Products Likeness Score"},
+        yaxis: {title: "Density"}
+    };
+
+
+    Plotly.newPlot('npPanel', data, layout);
+
+    // ***************************************
+
+    /*]]>*/
+</script>
+
+
+<form action="/">
+    <input type="submit" value="Compute NP-likeness score for a new file" />
+</form>
+
+</body>
+</html>

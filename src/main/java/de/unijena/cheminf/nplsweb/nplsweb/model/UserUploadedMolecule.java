@@ -12,6 +12,8 @@ public class UserUploadedMolecule {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer umol_id;
 
+    private String uu_id;
+
     @Column(length=1200)
     private String smiles;
 
@@ -20,6 +22,8 @@ public class UserUploadedMolecule {
     private Integer isInMolecule;
 
     private Integer addedToMolecule;
+
+
 
 
     private Double npl_score;
@@ -32,7 +36,9 @@ public class UserUploadedMolecule {
 
     private Integer atom_number;
 
-    private Integer containsSugar;
+    private String sessionid;
+
+
 
 
     @PrePersist
@@ -121,11 +127,19 @@ public class UserUploadedMolecule {
         this.atom_number = atom_number;
     }
 
-    public Integer getContainsSugar() {
-        return containsSugar;
+    public String getSessionid() {
+        return sessionid;
     }
 
-    public void setContainsSugar(Integer containsSugar) {
-        this.containsSugar = containsSugar;
+    public void setSessionid(String sessionid) {
+        this.sessionid = sessionid;
+    }
+
+    public String getUu_id() {
+        return uu_id;
+    }
+
+    public void setUu_id(String uu_id) {
+        this.uu_id = uu_id;
     }
 }
