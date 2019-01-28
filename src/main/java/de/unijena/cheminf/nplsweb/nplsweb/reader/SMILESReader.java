@@ -60,7 +60,7 @@ public class SMILESReader implements IReader {
                             molecule.setProperty("ID", splitted[1]);
                             molecule.setID(splitted[1]);
 
-                            molecule.setProperty("FILE_ORIGIN", file.getName().replace(".sdf", ""));
+                            molecule.setProperty("FILE_ORIGIN", file.getName().replace(".smi", ""));
 
 
                             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -91,14 +91,16 @@ public class SMILESReader implements IReader {
 
                             molecule = moleculeChecker.checkMolecule(molecule);
 
-
                             if(molecule != null) {
 
-                                this.molecules.put(id, molecule);
+                                this.molecules.put(molecule.getID(), molecule);
                             }
                             else{
-                                this.molecules.put(id, null);
+                                this.molecules.put(molecule.getID(), null);
                             }
+
+
+
 
                         } catch (InvalidSmilesException e) {
                             e.printStackTrace();
@@ -123,6 +125,7 @@ public class SMILESReader implements IReader {
             ex.printStackTrace();
         }
 
+        System.out.println("Number of molecules in file : "+this.molecules.keySet().size());
         return this.molecules;
     }
 }

@@ -1,0 +1,17 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NP-likeness scorer - Results</title>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+<div th:if="${numberOfProcessedMolecules}">
+    <h2>Processing <span th:text="${numberOfProcessedMolecules}">0</span> molecules </h2>
+</div>
+
+</body>
+</html>

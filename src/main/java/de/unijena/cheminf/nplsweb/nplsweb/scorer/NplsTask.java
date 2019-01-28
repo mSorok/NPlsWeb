@@ -7,6 +7,7 @@ import de.unijena.cheminf.nplsweb.nplsweb.model.*;
 
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
+import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.graph.CycleFinder;
@@ -86,6 +87,8 @@ public class NplsTask implements Runnable{
         SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Absolute |
                 SmiFlavor.UseAromaticSymbols);
 
+        //DepictionGenerator dg = new DepictionGenerator().withSize(120, 120).withAtomColors();
+
         try{
 
             for(String keyAc : this.moleculesToCompute.keySet()){
@@ -104,6 +107,10 @@ public class NplsTask implements Runnable{
                 uum.setSmiles(smilesGenerator.create(ac));
 
                 uum.setAtom_number(ac.getAtomCount());
+
+
+
+
 
                 uum = uumr.save(uum);
 
@@ -206,8 +213,8 @@ public class NplsTask implements Runnable{
                             }
                         }
 
-                        sugarFreeScoreNP=scoreNP/ac.getAtomCount();
-                        sugarFreeScoreSM=scoreSM/ac.getAtomCount();
+                        sugarFreeScoreNP=scoreNP/sugarlessMolecule.getAtomCount();
+                        sugarFreeScoreSM=scoreSM/sugarlessMolecule.getAtomCount();
                     }
 
 
@@ -216,6 +223,10 @@ public class NplsTask implements Runnable{
                     uum.setSml_score(sugarFreeScoreSM);
 
                 }
+
+                //dg.depict(ac).writeTo("./src/main/resources/static/img/"+uum.getUmol_id()+".png");
+
+                //uum.setDepictionLocation(uum.getUmol_id()+".png");
 
 
                 uumr.save(uum);

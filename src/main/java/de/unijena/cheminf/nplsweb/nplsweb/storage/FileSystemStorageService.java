@@ -8,6 +8,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -52,6 +53,7 @@ public class FileSystemStorageService implements StorageService{
 
     }
 
+
     @Override
     public Path load(String filename) {
         return rootLocation.resolve(filename);
@@ -76,7 +78,12 @@ public class FileSystemStorageService implements StorageService{
 
     @Override
     public void deleteAll() {
+
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        //Path imageLocation = Paths.get("src/main/resources/static/img");
+        //FileSystemUtils.deleteRecursively(imageLocation.toFile());
+        //new File("src/main/resources/static/img").mkdir();
+
     }
 
     @Override

@@ -86,6 +86,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-depict</artifactId>
+			<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-io</artifactId>
 			<version>${cdk.version}</version>
 			<exclusions>

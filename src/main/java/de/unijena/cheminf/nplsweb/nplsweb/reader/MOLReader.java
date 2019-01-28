@@ -83,10 +83,10 @@ public class MOLReader implements IReader {
 
                     if(molecule != null) {
 
-                        this.molecules.put(id, molecule);
+                        this.molecules.put(molecule.getID(), molecule);
                     }
                     else{
-                        this.molecules.put(id, null);
+                        this.molecules.put(molecule.getID(), null);
                     }
 
 

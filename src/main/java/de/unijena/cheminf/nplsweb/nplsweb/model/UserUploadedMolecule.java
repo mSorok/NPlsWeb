@@ -23,6 +23,8 @@ public class UserUploadedMolecule {
 
     private Integer addedToMolecule;
 
+    private String depictionLocation;
+
 
 
 
@@ -141,5 +143,13 @@ public class UserUploadedMolecule {
 
     public void setUu_id(String uu_id) {
         this.uu_id = uu_id;
+    }
+
+    public String getDepictionLocation() {
+        return depictionLocation;
+    }
+
+    public void setDepictionLocation(String depictionLocation) {
+        this.depictionLocation = depictionLocation;
     }
 }

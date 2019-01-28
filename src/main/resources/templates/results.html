@@ -4,33 +4,89 @@
     <meta charset="UTF-8">
     <title>NP-likeness scorer - Results</title>
 
+
+
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link rel="stylesheet" href="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.css" type="text/css">
+    <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.js"></script>
+
+
+    <link rel="stylesheet" href="ChemDoodleWeb-8.0.0/install/uis/jquery-ui-1.11.4.css" type="text/css">
+    <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/uis/ChemDoodleWeb-uis.js"></script>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="/DataTables/datatables.min.css"/>
+
+    <script type="text/javascript" src="/DataTables/datatables.min.js"></script>
+
 </head>
+
+
+
+
 <body>
+
+<div id="header">
+
+    <a href="cheminf.uni-jena.de"><img src="/img/cropped-Title_dec_2017.png"></a>
+    <h1>Natural Product Likeness Score calculator</h1>
+</div>
 
 
 <div th:if="${numberOfProcessedMolecules}">
-    <h2>Processing <span th:text="${numberOfProcessedMolecules}">0</span> molecules </h2>
+    <em>Processed <span th:text="${numberOfProcessedMolecules}">0</span> molecule(s) </em>
+    <br>
+
+    <strong>Scroll down for scores distributions</strong>
 </div>
 
 
-<div>
-    Scores in this session:
-    <ul>
-        <li th:each="score : ${scores}">
-            <p th:text="${score.getUu_id()}" />
+
+<h3>Scores in this session:</h3>
+<div id="resultsTable">
+
+    <table>
+    <tr th:each="score : ${scores}">
+        <td th:text="${score.getUu_id()}"></td>
+        <td>
             <ul>
                 <li th:text="${ 'NPL score: ' + #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }" />
                 <li th:text="${ 'NPL score (with sugar): ' + #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }" />
-                <li th:text="${ 'SML score: ' + #numbers.formatDecimal(score.getSml_score(), 1, 2 )  }" />
-                <li th:text="${ 'SML score (with sugar): ' + #numbers.formatDecimal(score.getSml_sugar_score(), 1, 2 )  }" />
+
             </ul>
-        </li>
-    </ul>
+        </td>
+        <!--<td>
+            <img th:src="@{ '/img/'+${score.getDepictionLocation()} }"/>
+
+        </td>-->
+    </tr>
+    </table>
+
+
 </div>
 
 
-<div id="npPanel" style="width: 800px; height: 450px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+
+<form action="/">
+    <input type="submit" value="Compute NP-likeness score for a new file" />
+</form>
+
+
+<div>
+
+    <strong>Clic on the databases or taxonomic kingdoms to toggle the NP-likeness distributions</strong>
+
+</div>
+
+<div id="npPanel" style="width: 1000px; height: 550px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 
 
 <script th:inline="javascript">
@@ -45,6 +101,60 @@
     let npYdataSM = /*[[${npYdataSM}]]*/ 'default';
 
 
+    // by taxonomy
+    let npXdataBACTERIA = /*[[${npXbacteria}]]*/ 'default';
+    let npYdataBACTERIA = /*[[${npYbacteria}]]*/ 'default';
+
+    let npXdataFUNGI = /*[[${npXfungi}]]*/ 'default';
+    let npYdataFUNGI = /*[[${npYfungi}]]*/ 'default';
+
+    let npXdataPLANTS = /*[[${npXplants}]]*/ 'default';
+    let npYdataPLANTS = /*[[${npYplants}]]*/ 'default';
+
+    //by DB
+    let npXdataCHEBI = /*[[${npXchebi}]]*/ 'default';
+    let npYdataCHEBI = /*[[${npYchebi}]]*/ 'default';
+
+    let npXdataTCMDB = /*[[${npXtcmdb}]]*/ 'default';
+    let npYdataTCMDB = /*[[${npYtcmdb}]]*/ 'default';
+
+    let npXdataZINCNP = /*[[${npXzincnp}]]*/ 'default';
+    let npYdataZINCNP = /*[[${npYzincnp}]]*/ 'default';
+
+    let npXdataPUBCHEM = /*[[${npXpubchem}]]*/ 'default';
+    let npYdataPUBCHEM = /*[[${npYpubchem}]]*/ 'default';
+
+    let npXdataCHEMBL = /*[[${npXchembl}]]*/ 'default';
+    let npYdataCHEMBL = /*[[${npYchembl}]]*/ 'default';
+
+    let npXdataNPATLAS = /*[[${npXnpatlas}]]*/ 'default';
+    let npYdataNPATLAS = /*[[${npYnpatlas}]]*/ 'default';
+
+    let npXdataNUBBE = /*[[${npXnubbe}]]*/ 'default';
+    let npYdataNUBBE = /*[[${npYnubbe}]]*/ 'default';
+
+    let npXdataSANCDB = /*[[${npXsancdb}]]*/ 'default';
+    let npYdataSANCDB = /*[[${npYsancdb}]]*/ 'default';
+
+    let npXdataDRUGBANK = /*[[${npXdrugbank}]]*/ 'default';
+    let npYdataDRUGBANK = /*[[${npYdrugbank}]]*/ 'default';
+
+    let npXdataHMDB = /*[[${npXhmdb}]]*/ 'default';
+    let npYdataHMDB = /*[[${npYhmdb}]]*/ 'default';
+
+    let npXdataOLD2012 = /*[[${npXold2012}]]*/ 'default';
+    let npYdataOLD2012 = /*[[${npYold2012}]]*/ 'default';
+
+    let npXdataSUPERNATURAL = /*[[${npXsupernatural}]]*/ 'default';
+    let npYdataSUPERNATURAL = /*[[${npYsupernatural}]]*/ 'default';
+
+    let npXdataAFRODB = /*[[${npXafrodb}]]*/ 'default';
+    let npYdataAFRODB = /*[[${npYafrodb}]]*/ 'default';
+
+
+
+
+    // the computed user scores
     let scoresObject = /*[[${scores}]]*/ 'default';
 
     // data obtained
@@ -67,13 +177,12 @@
         score = scoresObject[i];
         xnpuser.push( Number(( score.npl_score).toFixed(2)) );
 
-        //ynpuser.push( npYdata[npXdata.indexOf( Number(( score.npl_score).toFixed(1)) ) ]);
 
-        ynpuser.push(-0.01);
+        ynpuser.push(0.002);
         tnpuser.push(score.uu_id);
     }
 
-    var traceComputedNPscoresNP = {
+    var traceUserNPScores = {
         x: xnpuser,
         y: ynpuser,
         mode: 'markers',
@@ -91,6 +200,7 @@
             }
         }
     };
+
     // ***************************************
 
     // ***************************************
@@ -98,11 +208,12 @@
     var traceNP = {
         x: npXdata,
         y: npYdata ,
+        //legendgroup: 'general',
         mode: 'lines',
         name: 'Natural Products',
         line: {
             shape: 'spline',
-            color: 'rgb(0, 152, 76)',
+            // color: 'rgb(0, 152, 76)',
             width: 2
         },
         type: 'scatter',
@@ -118,17 +229,316 @@
     var traceSM = {
         x: npXdataSM,
         y: npYdataSM ,
+        //legendgroup: 'general',
         mode: 'lines',
         name: 'Synthetic Products',
         line: {
             shape: 'spline',
-            color: 'rgb(76, 0, 153)',
+            // color: 'rgb(76, 0, 153)',
             width: 2
         },
         type: 'scatter',
         hoverinfo:'x',
     };
 
+
+    // ***************************************
+    // building object to trace for BACTERIA
+
+    var traceBACTERIA = {
+        x: npXdataBACTERIA,
+        y: npYdataBACTERIA ,
+        //legendgroup: 'bytaxonomy',
+        mode: 'lines',
+        name: 'Bacteria',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // ***************************************
+    // building object to trace for FUNGI
+
+    var traceFUNGI = {
+        x: npXdataFUNGI,
+        y: npYdataFUNGI ,
+        //legendgroup: 'bytaxonomy',
+        mode: 'lines',
+        name: 'Fungi',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // ***************************************
+    // building object to trace for PLANTS
+
+    var tracePLANTS = {
+        x: npXdataPLANTS,
+        y: npYdataPLANTS ,
+        //legendgroup: 'bytaxonomy',
+        mode: 'lines',
+        name: 'Plants',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            //color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // ***************************************
+
+
+    // building object to trace for CHEBI
+
+    var traceCHEBI = {
+        x: npXdataCHEBI,
+        y: npYdataCHEBI ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'ChEBI',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for TCMDB
+
+    var traceTCMDB = {
+        x: npXdataTCMDB,
+        y: npYdataTCMDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'TCMDB',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for ZINC NP
+
+    var traceZINCNP = {
+        x: npXdataZINCNP,
+        y: npYdataZINCNP ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'ZINC Natural Products',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for PUBCHEM
+
+    var tracePUBCHEM = {
+        x: npXdataPUBCHEM,
+        y: npYdataPUBCHEM ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'PubChem',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for CHEMBL
+
+    var traceCHEMBL = {
+        x: npXdataCHEMBL,
+        y: npYdataCHEMBL ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'ChEMBL',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for ZINC NP
+
+    var traceNPATLAS = {
+        x: npXdataNPATLAS,
+        y: npYdataNPATLAS ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NP Atlas',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for NUBBE
+
+    var traceNUBBE = {
+        x: npXdataNUBBE,
+        y: npYdataNUBBE ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NuBBE',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for SANCDB
+
+    var traceSANCDB = {
+        x: npXdataSANCDB,
+        y: npYdataSANCDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'SANCDB',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for SUPERNATURAL
+
+    var traceSUPERNATURAL = {
+        x: npXdataSUPERNATURAL,
+        y: npYdataSUPERNATURAL ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'Supernatural II',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for AFRODB
+
+    var traceAFRODB = {
+        x: npXdataAFRODB,
+        y: npYdataAFRODB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'AfroDB',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for OLD2012
+
+    var traceOLD2012 = {
+        x: npXdataOLD2012,
+        y: npYdataOLD2012 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'Manually curated NP dataset [1]',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    // building object to trace for HMDB
+
+    var traceHMDB = {
+        x: npXdataHMDB,
+        y: npYdataHMDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'HMDB',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for DRUGBANK
+
+    var traceDRUGBANK = {
+        x: npXdataDRUGBANK,
+        y: npYdataDRUGBANK ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'DrugBank',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
 
 
     // ***************************************
@@ -137,13 +547,22 @@
     // ***************************************
     // Prepare and plot
 
-    let data = [traceNP, traceSM, traceComputedNPscoresNP];
+    let data = [traceNP, traceSM, traceOLD2012, traceSUPERNATURAL, traceCHEBI, traceTCMDB, traceZINCNP, tracePUBCHEM,
+        traceCHEMBL, traceNPATLAS, traceNUBBE, traceSANCDB, traceAFRODB, traceDRUGBANK, traceBACTERIA,
+        traceFUNGI, tracePLANTS,  traceUserNPScores]; //traceBACTERIA, traceFUNGI, tracePLANTS, traceHMDB,
 
     let layout = {
 
         title: "Natural Product Likeness Score Distribution",
-        xaxis: {title: "Natural Products Likeness Score"},
-        yaxis: {title: "Density"}
+        xaxis: {
+            title: "Natural Products Likeness Score",
+            range: [-4,6]
+        },
+        yaxis: {
+            title: "Density",
+            range: [0,0.1]
+        },
+        colorway: 'Rainbow'
     };
 
 
@@ -154,10 +573,17 @@
     /*]]>*/
 </script>
 
+<div>
+
+    <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
+        In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
+</div>
+
 
 <form action="/">
     <input type="submit" value="Compute NP-likeness score for a new file" />
 </form>
+
 
 </body>
 </html>
