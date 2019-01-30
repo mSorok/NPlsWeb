@@ -83,15 +83,30 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     //BY KINGDOM
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.id LIKE 'b%'")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%'")
     List<Object[]> getNPLSinBACTERIA();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.id LIKE 'g%'")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'f%'")
     List<Object[]> getNPLSinFUNGI();
 
 
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR source='NUBBE' OR source='AFRODB')")
     List<Object[]> getNPLSinPLANTS();
+
+    //BY SIZE
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<100")
+    List<Object[]> getNPLSac100();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<200 AND molecule.atom_number>=100")
+    List<Object[]> getNPLSac100_200();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<300 AND molecule.atom_number>=200")
+    List<Object[]> getNPLSac200_300();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number>=300")
+    List<Object[]> getNPLSac300();
+
 
 
 

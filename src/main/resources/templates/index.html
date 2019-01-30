@@ -34,10 +34,10 @@
 
 <body>
 
-<div id="header">
+<div id="headercheminf">
 
     <a href="cheminf.uni-jena.de"><img src="/img/cropped-Title_dec_2017.png"></a>
-    <h1>Natural Product Likeness Score calculator</h1>
+    <h1>Natural Product Likeness Scorer</h1>
 </div>
 
 
@@ -50,6 +50,7 @@
 
         <br>
         <br>
+        <h2>About</h2>
         Natural product-likeness of a molecule, <it>i.e.</it> similarity of this molecule to the structure space covered by natural products,
         is a useful criterion in screening compound libraries and in designing new lead compounds.
         This NP-likeness scorer has been trained on XXXX NP from public databases (Supernatural II, ZINC natural products, ChEBI, TCMDB, PubChem, ChEMBL, NPAtlas, NuBBE, SANCDB and AFRODB)
@@ -59,17 +60,14 @@
 
         <br>
         <br>
-        <strong>Instructions:</strong><br>
-        Four ways to use the NP-likeness scorer:
+        <strong>Four ways to use the NP-likeness scorer:</strong>
         <ul>
             <li>Upload a molecular file in one of the accepted formats (MOL, SDF or smiles). Maximum 200 molecules per file.</li>
-            <li>Paste a SMILES string</li>
+            <li>Paste a SMILES string of a molecule</li>
+            <li>Draw a molecule</li>
+            <li>Visualise the distribution of the NP-likeness score across natural products of public databases and taxonomy (bacteria, fungi and plants)</li>
         </ul>
 
-        <br>
-        <br>
-        <strong>Confidentiality:</strong><br>
-        The molecules are kept confidential and will be deleted after processing.
 
 
 
@@ -106,6 +104,8 @@
 
         </div>
     </div>
+
+    <div id="fill3"></div>
 
 
     <div id="chemDoodleSketcher">
@@ -146,6 +146,9 @@
 
         </table>
 
+        <br><br><strong>Confidentiality:</strong><br>
+        The molecules are kept confidential and will be deleted after processing.
+
 
     </div>
 
@@ -170,9 +173,14 @@
 </div>
 
 <div id="distributions_no_user_score_parent">
-    <h2>Distribution of NP-likeness score across databases and taxonomy</h2>
+    <h2>Distribution of NP-likeness score across databases, taxonomy and molecular size</h2>
     <div id="distributions_no_user_score">
 
+    </div>
+    <div id="bibliography">
+        <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
+            In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
+        <p>more to add</p>
     </div>
 </div>
 
@@ -180,7 +188,7 @@
 
 
 
--->
+
 <div th:if="${uncorrectMolecule}">
     <h2 th:text="${uncorrectMolecule}"/>
 </div>
@@ -275,6 +283,18 @@
     let npXdataAFRODB = /*[[${npXafrodb}]]*/ 'default';
     let npYdataAFRODB = /*[[${npYafrodb}]]*/ 'default';
 
+    let npXac100 = /*[[${npXac100}]]*/ 'default';
+    let npYac100 = /*[[${npYac100}]]*/ 'default';
+
+    let npXac100200 = /*[[${npXac100200}]]*/ 'default';
+    let npYac100200 = /*[[${npYac100200}]]*/ 'default';
+
+    let npXac200300 = /*[[${npXac200300}]]*/ 'default';
+    let npYac200300 = /*[[${npYac200300}]]*/ 'default';
+
+    let npXac300 = /*[[${npXac300}]]*/ 'default';
+    let npYac300 = /*[[${npYac300}]]*/ 'default';
+
 
 
 
@@ -295,7 +315,7 @@
         y: npYdata ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Natural Products',
+        name: 'Natural Products (all)',
         line: {
             shape: 'spline',
             // color: 'rgb(0, 152, 76)',
@@ -316,7 +336,7 @@
         y: npYdataSM ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Synthetic Products',
+        name: 'Synthetic Products (all)',
         line: {
             shape: 'spline',
             // color: 'rgb(76, 0, 153)',
@@ -395,7 +415,7 @@
         y: npYdataCHEBI ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEBI',
+        name: 'ChEBI Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -451,7 +471,7 @@
         y: npYdataPUBCHEM ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'PubChem',
+        name: 'PubChem Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -469,7 +489,7 @@
         y: npYdataCHEMBL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEMBL',
+        name: 'ChEMBL Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -577,7 +597,7 @@
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset [1]',
+        name: 'Manually curated NP dataset',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -626,6 +646,75 @@
     };
 
 
+    // building object to trace for BY SIZE
+
+    var traceAC100 = {
+        x: npXac100,
+        y: npYac100 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size < 100 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    var traceAC100200 = {
+        x: npXac100200,
+        y: npYac100200 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size between 100 and 200 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    var traceAC200300 = {
+        x: npXac200300,
+        y: npYac200300 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size between 200 and 300 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    var traceAC300 = {
+        x: npXac300,
+        y: npYac300 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size >=300 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+
     // ***************************************
 
 
@@ -634,11 +723,10 @@
 
     let data = [traceNP, traceSM, traceOLD2012, traceSUPERNATURAL, traceCHEBI, traceTCMDB, traceZINCNP, tracePUBCHEM,
         traceCHEMBL, traceNPATLAS, traceNUBBE, traceSANCDB, traceAFRODB, traceDRUGBANK, traceBACTERIA,
-        traceFUNGI, tracePLANTS];
+        traceFUNGI, tracePLANTS, traceAC100, traceAC100200, traceAC200300, traceAC300];
 
     let layout = {
 
-        title: "Natural Product Likeness Score Distribution",
         xaxis: {
             title: "Natural Products Likeness Score",
             range: [-4,6],

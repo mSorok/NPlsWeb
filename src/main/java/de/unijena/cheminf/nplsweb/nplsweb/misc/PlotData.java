@@ -71,6 +71,23 @@ public class PlotData {
     public ArrayList<Double> npYafrodb = new ArrayList<>();
 
 
+
+    // X and Y by SIZE
+
+    public ArrayList<Double> npXac100 = new ArrayList<>();
+    public ArrayList<Double> npYac100 = new ArrayList<>();
+
+    public ArrayList<Double> npXac100200 = new ArrayList<>();
+    public ArrayList<Double> npYac100200 = new ArrayList<>();
+
+    public ArrayList<Double> npXac200300 = new ArrayList<>();
+    public ArrayList<Double> npYac200300 = new ArrayList<>();
+
+    public ArrayList<Double> npXac300 = new ArrayList<>();
+    public ArrayList<Double> npYac300 = new ArrayList<>();
+
+
+
     //************************************************$
     // DATA FOR EVERYTHING
 
@@ -99,6 +116,12 @@ public class PlotData {
     public Hashtable<Double, Double> npScoresBACTERIA = null;
     public Hashtable<Double, Double> npScoresFUNGI = null;
     public Hashtable<Double, Double> npScoresPLANTS = null;
+
+
+    public Hashtable<Double, Double> npScoresAC100 = null;
+    public Hashtable<Double, Double> npScoresAC100200 = null;
+    public Hashtable<Double, Double> npScoresAC200300 = null;
+    public Hashtable<Double, Double> npScoresAC300 = null;
 
 
 

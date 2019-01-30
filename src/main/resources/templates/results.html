@@ -34,7 +34,7 @@
 
 <body>
 
-<div id="header">
+<div id="headercheminf">
 
     <a href="cheminf.uni-jena.de"><img src="/img/cropped-Title_dec_2017.png"></a>
     <h1>Natural Product Likeness Score calculator</h1>
@@ -45,40 +45,59 @@
     <em>Processed <span th:text="${numberOfProcessedMolecules}">0</span> molecule(s) </em>
     <br>
 
-    <strong>Scroll down for scores distributions</strong>
+    <strong>Scroll down for scores distribution plot</strong>
 </div>
 
 
 
-<h3>Scores in this session:</h3>
+<h3>NPL scores in this session:</h3>
 <div id="resultsTable">
 
     <table>
-    <tr th:each="score : ${scores}">
-        <td th:text="${score.getUu_id()}"></td>
-        <td>
-            <ul>
-                <li th:text="${ 'NPL score: ' + #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }" />
-                <li th:text="${ 'NPL score (with sugar): ' + #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }" />
+        <tr th:each="score : ${scores}">
+            <td th:text="${score.getUu_id()}"></td>
+            <td>
+                <ul>
+                    <li th:text="${ 'NPL score: ' + #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }" />
+                    <li th:text="${ 'NPL score (with sugar): ' + #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }" />
 
-            </ul>
-        </td>
-        <!--<td>
-            <img th:src="@{ '/img/'+${score.getDepictionLocation()} }"/>
+                </ul>
+            </td>
 
-        </td>-->
-    </tr>
+        </tr>
     </table>
+
+
+
+    <table id="resultsTableTable" class="display">
+        <thead>
+        <tr>
+            <th>Molecule id</th>
+            <th>NPL score</th>
+            <th>NPL score (with sugar)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="score : ${scores}">
+            <td th:text="${score.getUu_id()}"></td>
+            <td th:text="${  #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }"></td>
+            <td th:text="${  #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }"></td>
+        </tr>
+
+        </tbody>
+    </table>
+
 
 
 </div>
 
 
-
-<form action="/">
-    <input type="submit" value="Compute NP-likeness score for a new file" />
-</form>
-
+<div id="resubmit">
+    <br><br>
+    <form action="/">
+        <input type="submit" value="Compute new NP-likeness score(s)" />
+    </form>
+</div>
 
 <div>
 
@@ -86,8 +105,14 @@
 
 </div>
 
-<div id="npPanel" style="width: 1000px; height: 550px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+<div id="npPanel"><!-- Plotly chart will be drawn inside this DIV --></div>
 
+
+<script>
+    $(document).ready( function () {
+        $('#resultsTableTable').DataTable();
+    } );
+</script>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -152,6 +177,20 @@
     let npYdataAFRODB = /*[[${npYafrodb}]]*/ 'default';
 
 
+    let npXac100 = /*[[${npXac100}]]*/ 'default';
+    let npYac100 = /*[[${npYac100}]]*/ 'default';
+
+    let npXac100200 = /*[[${npXac100200}]]*/ 'default';
+    let npYac100200 = /*[[${npYac100200}]]*/ 'default';
+
+    let npXac200300 = /*[[${npXac200300}]]*/ 'default';
+    let npYac200300 = /*[[${npYac200300}]]*/ 'default';
+
+    let npXac300 = /*[[${npXac300}]]*/ 'default';
+    let npYac300 = /*[[${npYac300}]]*/ 'default';
+
+
+
 
 
     // the computed user scores
@@ -210,7 +249,7 @@
         y: npYdata ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Natural Products',
+        name: 'Natural Products (all)',
         line: {
             shape: 'spline',
             // color: 'rgb(0, 152, 76)',
@@ -231,7 +270,7 @@
         y: npYdataSM ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Synthetic Products',
+        name: 'Synthetic Products (all)',
         line: {
             shape: 'spline',
             // color: 'rgb(76, 0, 153)',
@@ -310,7 +349,7 @@
         y: npYdataCHEBI ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEBI',
+        name: 'ChEBI Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -366,7 +405,7 @@
         y: npYdataPUBCHEM ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'PubChem',
+        name: 'PubChem Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -384,7 +423,7 @@
         y: npYdataCHEMBL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEMBL',
+        name: 'ChEMBL Natural Products',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -492,7 +531,7 @@
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset [1]',
+        name: 'Manually curated NP dataset',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -541,19 +580,87 @@
     };
 
 
+    // building object to trace for BY SIZE
+
+    var traceAC100 = {
+        x: npXac100,
+        y: npYac100 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size < 100 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    var traceAC100200 = {
+        x: npXac100200,
+        y: npYac100200 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size between 100 and 200 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    var traceAC200300 = {
+        x: npXac200300,
+        y: npYac200300 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size between 200 and 300 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+    var traceAC300 = {
+        x: npXac300,
+        y: npYac300 ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'molecule size >=300 atoms',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
     // ***************************************
 
 
     // ***************************************
     // Prepare and plot
 
-    let data = [traceNP, traceSM, traceOLD2012, traceSUPERNATURAL, traceCHEBI, traceTCMDB, traceZINCNP, tracePUBCHEM,
+    let data = [traceUserNPScores, traceNP, traceSM, traceOLD2012, traceSUPERNATURAL, traceCHEBI, traceTCMDB, traceZINCNP, tracePUBCHEM,
         traceCHEMBL, traceNPATLAS, traceNUBBE, traceSANCDB, traceAFRODB, traceDRUGBANK, traceBACTERIA,
-        traceFUNGI, tracePLANTS,  traceUserNPScores]; //traceBACTERIA, traceFUNGI, tracePLANTS, traceHMDB,
+        traceFUNGI, tracePLANTS,  traceAC100, traceAC100200, traceAC200300, traceAC300]; //traceBACTERIA, traceFUNGI, tracePLANTS, traceHMDB,
 
     let layout = {
 
-        title: "Natural Product Likeness Score Distribution",
+
         xaxis: {
             title: "Natural Products Likeness Score",
             range: [-4,6]
@@ -575,14 +682,17 @@
 
 <div>
 
-    <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
-        In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
+    <!--<p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
+        In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>-->
 </div>
 
 
-<form action="/">
-    <input type="submit" value="Compute NP-likeness score for a new file" />
-</form>
+<div id="resubmit">
+    <br><br>
+    <form action="/">
+        <input type="submit" value="Compute new NP-likeness score(s)" />
+    </form>
+</div>
 
 
 </body>

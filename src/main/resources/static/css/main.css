@@ -34,9 +34,6 @@
 
 
 
-html {height:100%;}
-body {height:100%;}
-
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
     margin-bottom: 0.5rem;
@@ -72,32 +69,46 @@ table td {
 }
 
 
-#header{
-    margin-left: 150px;
-    margin-bottom: 150px;
-
+#headercheminf{
+    margin-left: 10%;
 }
 
 #container
 {
 
-    height:70%;
-    margin-bottom: 150px;
-    margin-left: 80px;
+    margin-left: 5%;
+    margin-right: 5%;
+    height: 700px;
 }
 
 
 #submitFile
 {
     float:left;
-    width:50%;
+    width:47.5%;
+
+    text-align: justify;
+    text-justify: inter-word;
+
+    height: 100%;
 }
+
+#fill3{
+    float:left;
+    width: 5%;
+    height: 100%;
+}
+
 #chemDoodleSketcher
 {
     float:left;
-    width:50%;
+    width:47.5%;
+    height: 100%;
 
 }
+
+
+
 #listSubmittedFiles{
     float:bottom;
     width:50%;
@@ -119,13 +130,20 @@ table td {
 #distributions_no_user_score_parent{
     vertical-align: center;
     text-align:center;
+    height: 700px;
+    width: 100%
 
 }
 
 #distributions_no_user_score{
     margin:auto;
+    height: 100%;
     width: 80%;
-    height: 75%;
+}
+
+#npPanel{
+    width: 1200px;
+    height: 900px;
 }
 
 

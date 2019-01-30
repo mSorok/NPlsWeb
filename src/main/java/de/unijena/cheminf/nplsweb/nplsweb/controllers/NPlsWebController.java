@@ -312,6 +312,18 @@ public class NPlsWebController {
             model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
             model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
 
+            model.addAttribute("npXac100", this.plotData.npXac100);
+            model.addAttribute("npYac100", this.plotData.npYac100);
+
+            model.addAttribute("npXac100200", this.plotData.npXac100200);
+            model.addAttribute("npYac100200", this.plotData.npYac100200);
+
+            model.addAttribute("npXac200300", this.plotData.npXac200300);
+            model.addAttribute("npYac200300", this.plotData.npYac200300);
+
+            model.addAttribute("npXac300", this.plotData.npXac300);
+            model.addAttribute("npYac300", this.plotData.npYac300);
+
 
 
 
@@ -435,6 +447,18 @@ public class NPlsWebController {
         model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
         model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
 
+        model.addAttribute("npXac100", this.plotData.npXac100);
+        model.addAttribute("npYac100", this.plotData.npYac100);
+
+        model.addAttribute("npXac100200", this.plotData.npXac100200);
+        model.addAttribute("npYac100200", this.plotData.npYac100200);
+
+        model.addAttribute("npXac200300", this.plotData.npXac200300);
+        model.addAttribute("npYac200300", this.plotData.npYac200300);
+
+        model.addAttribute("npXac300", this.plotData.npXac300);
+        model.addAttribute("npYac300", this.plotData.npYac300);
+
 
 
 
@@ -478,6 +502,11 @@ public class NPlsWebController {
             this.plotData.npScoresPLANTS = npScorerService.returnAllNPLScoresPLANTS();
 
 
+            //Get subplots by size
+            this.plotData.npScoresAC100 = npScorerService.returnAllNPLScoresAC100();
+            this.plotData.npScoresAC100200 = npScorerService.returnAllNPLScoresAC100200();
+            this.plotData.npScoresAC200300 = npScorerService.returnAllNPLScoresAC200300();
+            this.plotData.npScoresAC300 = npScorerService.returnAllNPLScoresAC300();
 
             //SERIALIZE
             try{
@@ -598,6 +627,34 @@ public class NPlsWebController {
                 fos.close();
 
 
+                // BY SIZE
+
+                fos = new FileOutputStream("archive/npScoresAC100.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresAC100);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresAC100200.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresAC100200);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresAC200300.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresAC200300);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresAC300.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresAC300);
+                oos.close();
+                fos.close();
+
+
+
 
             }catch(IOException ioe) { ioe.printStackTrace(); }
 
@@ -713,6 +770,31 @@ public class NPlsWebController {
                 fis = new FileInputStream("archive/npScoresPLANTS.ser");
                 ois = new ObjectInputStream(fis);
                 this.plotData.npScoresPLANTS = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+
+                fis = new FileInputStream("archive/npScoresAC100.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresAC100 = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresAC100200.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresAC100200 = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresAC200300.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresAC200300 = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresAC300.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresAC300 = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
@@ -873,6 +955,39 @@ public class NPlsWebController {
 
         for (Double i : this.plotData.npXafrodb) {
             this.plotData.npYafrodb.add(this.plotData.npScoresAFRODB.get(i));
+        }
+
+
+        //BY SIZE LESS THAN 100
+        this.plotData.npXac100.addAll(this.plotData.npScoresAC100.keySet());
+        Collections.sort(this.plotData.npXac100);
+
+        for (Double i : this.plotData.npXac100) {
+            this.plotData.npYac100.add(this.plotData.npScoresAC100.get(i));
+        }
+
+        //BY SIZE LESS 100-200
+        this.plotData.npXac100200.addAll(this.plotData.npScoresAC100200.keySet());
+        Collections.sort(this.plotData.npXac100200);
+
+        for (Double i : this.plotData.npXac100200) {
+            this.plotData.npYac100200.add(this.plotData.npScoresAC100200.get(i));
+        }
+
+        //BY SIZE LESS 200-300
+        this.plotData.npXac200300.addAll(this.plotData.npScoresAC200300.keySet());
+        Collections.sort(this.plotData.npXac200300);
+
+        for (Double i : this.plotData.npXac200300) {
+            this.plotData.npYac200300.add(this.plotData.npScoresAC200300.get(i));
+        }
+
+        //BY SIZE LESS THAN 300
+        this.plotData.npXac300.addAll(this.plotData.npScoresAC300.keySet());
+        Collections.sort(this.plotData.npXac300);
+
+        for (Double i : this.plotData.npXac300) {
+            this.plotData.npYac300.add(this.plotData.npScoresAC300.get(i));
         }
 
 

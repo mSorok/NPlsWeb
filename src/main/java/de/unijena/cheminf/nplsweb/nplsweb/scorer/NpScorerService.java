@@ -10,9 +10,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -187,9 +185,10 @@ public class NpScorerService {
         Integer xmax  = (int)Math.ceil(maxscore);
 
 
-        for(double i=xmin;i<=xmax;i=i+0.07){
+        for(double i=xmin;i<=xmax;i=i+0.1){
             i = (double)Math.round(i *10) /10 ;
             axis.add(i);
+
         }
 
 
@@ -203,7 +202,6 @@ public class NpScorerService {
         Hashtable<Double, Integer> counts = new Hashtable<Double, Integer>();
         Hashtable<Double, Double> probs = new Hashtable<Double, Double>();
 
-
         //initialization of bin counts
         for(double i:xaxis){
             counts.put(i, 0);
@@ -215,10 +213,46 @@ public class NpScorerService {
         }
 
 
-        for(Double bin : counts.keySet()){
-            probs.put(bin, (double)counts.get(bin)/(double)scores.size());
+        if(scores.size()<100000){
+            Hashtable<Double, Integer> countsBigBins = new Hashtable<Double, Integer>();
+
+            for(double i=Collections.min(xaxis); i<=Collections.max(xaxis);i+=0.5){
+                if(counts.get(i) != null && counts.get(i + 0.1) != null && counts.get(i + 0.2) != null && counts.get(i + 0.3)!= null && counts.get(i + 0.4) != null) {
+                    countsBigBins.put(i+0.2, counts.get(i) + counts.get(i + 0.1) + counts.get(i + 0.2) + counts.get(i + 0.3) + counts.get(i + 0.4));
+                }
+                else if(counts.get(i) != null && counts.get(i + 0.1) != null && counts.get(i + 0.2) != null && counts.get(i + 0.3)!= null){
+                    countsBigBins.put(i+0.2, counts.get(i) + counts.get(i + 0.1) + counts.get(i + 0.2) + counts.get(i + 0.3) );
+                }
+                else if(counts.get(i) != null && counts.get(i + 0.1) != null && counts.get(i + 0.2) != null){
+                    countsBigBins.put(i+0.1, counts.get(i) + counts.get(i + 0.1) + counts.get(i + 0.2)  );
+                }
+                else if(counts.get(i) != null && counts.get(i + 0.1) != null){
+                    countsBigBins.put(i, counts.get(i) + counts.get(i + 0.1) );
+                }
+                else if(counts.get(i) != null ){
+                    countsBigBins.put(i, counts.get(i)  );
+                }
+            }
+
+            counts.clear();
+            counts.putAll(countsBigBins);
+
+            for(Double bin : counts.keySet()){
+                probs.put(bin, ((double)counts.get(bin)/ ((double)scores.size() ) ) / 5);
+            }
+
+
         }
-        //System.out.println(probs);
+        else{
+
+
+            for(Double bin : counts.keySet()){
+                probs.put(bin, (double)counts.get(bin)/ (double)scores.size() );
+            }
+
+        }
+
+
         return probs;
     }
 
@@ -358,8 +392,34 @@ public class NpScorerService {
     }
 
 
+    //SCORES BY SIZE
+    public Hashtable<Double, Double> returnAllNPLScoresAC100(){
 
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSac100();
 
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresAC100200(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSac100_200();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresAC200300(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSac200_300();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresAC300(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSac300();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
 
 
 
@@ -377,6 +437,11 @@ public class NpScorerService {
 
         return(computeBins(scores, returnxAxis("np_sugar")));
     }
+
+
+
+
+
 
     //SCORES BY DB - WITH SUGARS
 
