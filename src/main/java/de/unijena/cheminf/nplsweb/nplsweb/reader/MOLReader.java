@@ -47,7 +47,7 @@ public class MOLReader implements IReader {
                 try {
                     IAtomContainer molecule = reader.next();
 
-                    molecule.setProperty("MOL_NUMBER_IN_FILE",  file.getName()+" " + Integer.toString(count) );
+                    molecule.setProperty("MOL_NUMBER_IN_FILE",  file.getName().replace(".mol", "")+"#" + Integer.toString(count) );
                     molecule.setProperty("FILE_ORIGIN", file.getName().replace(".mol", ""));
 
 

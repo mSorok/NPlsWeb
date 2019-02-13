@@ -8,21 +8,28 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 public class NPlsWebApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(NPlsWebApplication.class, args);
-	}
+    static String IMAGE_DIR;
 
 
-	@Bean
-	CommandLineRunner init(StorageService storageService) {
-		return (args) -> {
-			storageService.deleteAll();
-			storageService.init();
-		};
-	}
+    public static void main(String[] args) {
+        IMAGE_DIR = "./molimg/";
+        SpringApplication.run(NPlsWebApplication.class, args);
+    }
+
+
+
+    @Bean
+    CommandLineRunner init(StorageService storageService) {
+        return (args) -> {
+            storageService.deleteAll();
+            storageService.init();
+        };
+    }
 }

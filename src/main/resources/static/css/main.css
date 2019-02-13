@@ -69,8 +69,10 @@ table td {
 }
 
 
+
 #headercheminf{
-    margin-left: 10%;
+    height:40%;
+    width:100%;
 }
 
 #container
@@ -99,6 +101,14 @@ table td {
     height: 100%;
 }
 
+#oclContainer
+{
+    float:left;
+    width:47.5%;
+    height: 100%;
+
+}
+
 #chemDoodleSketcher
 {
     float:left;
@@ -106,6 +116,7 @@ table td {
     height: 100%;
 
 }
+
 
 
 
@@ -122,15 +133,34 @@ table td {
 
 #resultsTable {
     /*<!--border: 1px solid black;-->*/
-    width:50%;
+    width:75%;
+    float: left;;
+    /*
     vertical-align: center;
+    */
+    /*
+    background-color: #6f42c1;
+    */
+}
+
+#resultsBody{
+    margin-left: 3%;
+}
+
+#resultsTableTable{
+    /*
+    width:100%;
+    */
+    /*
+    background-color: #007fbf;
+    */
 }
 
 
 #distributions_no_user_score_parent{
     vertical-align: center;
     text-align:center;
-    height: 700px;
+    height: 750px;
     width: 100%
 
 }
@@ -138,12 +168,7 @@ table td {
 #distributions_no_user_score{
     margin:auto;
     height: 100%;
-    width: 80%;
-}
-
-#npPanel{
-    width: 1200px;
-    height: 900px;
+    width: 100%;
 }
 
 

@@ -26,7 +26,7 @@ public class UserUploadedMolecule {
     private String depictionLocation;
 
 
-
+    private Integer sugar_free_atom_number;
 
     private Double npl_score;
 
@@ -152,4 +152,14 @@ public class UserUploadedMolecule {
     public void setDepictionLocation(String depictionLocation) {
         this.depictionLocation = depictionLocation;
     }
+
+
+    public Integer getSugar_free_atom_number() {
+        return sugar_free_atom_number;
+    }
+
+    public void setSugar_free_atom_number(Integer sugar_free_atom_number) {
+        this.sugar_free_atom_number = sugar_free_atom_number;
+    }
+
 }

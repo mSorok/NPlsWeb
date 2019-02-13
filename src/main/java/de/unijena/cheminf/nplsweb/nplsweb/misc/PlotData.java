@@ -7,6 +7,8 @@ public class PlotData {
 
 
 
+    public boolean isInitialised = false;
+
     // X and Y for everything
 
 
@@ -125,12 +127,19 @@ public class PlotData {
 
 
 
+    public Hashtable<String, Integer> globalCounts = null;
+
+
+
+
 
 
 
     public PlotData(){
 
     }
+
+
 
 
 

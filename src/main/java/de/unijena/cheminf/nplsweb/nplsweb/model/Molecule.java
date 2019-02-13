@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="molecule", indexes = {  @Index(name = "IDX1", columnList = "inchikey", unique = true) , @Index(name = "IDX2", columnList = "is_a_NP")} )
+@Table(name="molecule", indexes = {  @Index(name = "IDX1", columnList = "inchikey", unique = true) , @Index(name = "IDX2", columnList = "is_a_NP")  } )
 public class Molecule implements IMolecule{
 
 
@@ -33,7 +33,26 @@ public class Molecule implements IMolecule{
 
     private Integer atom_number;
 
+    private Integer sugar_free_atom_number;
+
     private Integer containsSugar;
+
+    private Integer numberOfRings;
+
+    private String molecularFormula;
+
+    private Integer numberOfCarbons;
+
+    private Integer numberOfOxygens;
+
+    private Integer numberOfNitrogens;
+
+    private Double ratioCsize;
+
+    private Integer numberRepeatedFragments;
+
+    private Double molecularWeight;
+
 
 
 
@@ -131,5 +150,86 @@ public class Molecule implements IMolecule{
 
     public Integer getContainsSugar() {
         return containsSugar;
+    }
+
+    public Integer getSugar_free_atom_number() {
+        return sugar_free_atom_number;
+    }
+
+    public void setSugar_free_atom_number(Integer sugar_free_atom_number) {
+        this.sugar_free_atom_number = sugar_free_atom_number;
+    }
+
+    public Integer getMol_id() {
+        return mol_id;
+    }
+
+    public void setMol_id(Integer mol_id) {
+        this.mol_id = mol_id;
+    }
+
+    public Integer getNumberOfRings() {
+        return numberOfRings;
+    }
+
+    public void setNumberOfRings(Integer numberOfRings) {
+        this.numberOfRings = numberOfRings;
+    }
+
+
+    public String getMolecularFormula() {
+        return molecularFormula;
+    }
+
+    public void setMolecularFormula(String molecularFormula) {
+        this.molecularFormula = molecularFormula;
+    }
+
+    public Integer getNumberOfCarbons() {
+        return numberOfCarbons;
+    }
+
+    public void setNumberOfCarbons(Integer numberOfCarbons) {
+        this.numberOfCarbons = numberOfCarbons;
+    }
+
+    public Integer getNumberOfOxygens() {
+        return numberOfOxygens;
+    }
+
+    public void setNumberOfOxygens(Integer numberOfOxygens) {
+        this.numberOfOxygens = numberOfOxygens;
+    }
+
+    public Integer getNumberOfNitrogens() {
+        return numberOfNitrogens;
+    }
+
+    public void setNumberOfNitrogens(Integer numberOfNitrogens) {
+        this.numberOfNitrogens = numberOfNitrogens;
+    }
+
+    public Double getRatioCsize() {
+        return ratioCsize;
+    }
+
+    public void setRatioCsize(Double ratioCsize) {
+        this.ratioCsize = ratioCsize;
+    }
+
+    public Integer getNumberRepeatedFragments() {
+        return numberRepeatedFragments;
+    }
+
+    public void setNumberRepeatedFragments(Integer numberRepeatedFragments) {
+        this.numberRepeatedFragments = numberRepeatedFragments;
+    }
+
+    public Double getMolecularWeight() {
+        return molecularWeight;
+    }
+
+    public void setMolecularWeight(Double molecularWeight) {
+        this.molecularWeight = molecularWeight;
     }
 }

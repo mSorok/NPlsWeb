@@ -1,6 +1,7 @@
 package de.unijena.cheminf.nplsweb.nplsweb.controllers;
 
 import de.unijena.cheminf.nplsweb.nplsweb.misc.PlotData;
+import de.unijena.cheminf.nplsweb.nplsweb.model.MoleculeRepository;
 import de.unijena.cheminf.nplsweb.nplsweb.reader.ReaderService;
 import de.unijena.cheminf.nplsweb.nplsweb.reader.UserInputMoleculeReaderService;
 import de.unijena.cheminf.nplsweb.nplsweb.scorer.NpScorerService;
@@ -20,8 +21,9 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -32,27 +34,21 @@ import java.util.stream.Collectors;
 @Controller
 public class NPlsWebController {
 
-    private boolean newPlot = false;
-
-    private PlotData plotData = new PlotData();
-
-
-
     private final StorageService storageService;
-
-
-
+    @Autowired
+    MoleculeRepository moleculeRepository;
     @Autowired
     HttpServletRequest request;
-
     @Autowired
     ReaderService readerService;
-
     @Autowired
     NpScorerService npScorerService;
-
     @Autowired
     UserInputMoleculeReaderService userInputMoleculeReaderService;
+
+
+    private boolean newPlot = false;
+    private PlotData plotData = new PlotData();
 
     @Autowired
     public NPlsWebController(StorageService storageService) {
@@ -86,7 +82,18 @@ public class NPlsWebController {
             readerService.startService(smifile);
             readerService.doWorkWithFile();
             npScorerService.setMolecules(readerService.getMolecules());
-            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getRemoteAddr();
+
+
+            String ipAddress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = request.getRemoteAddr();
+            }
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate localDate = LocalDate.now();
+            String userDate = dtf.format(localDate);
+
+            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
             npScorerService.setSesstionId(sessionId);
             npScorerService.doWork();
             redirectAttributes.addFlashAttribute("numberOfProcessedMolecules", "1");
@@ -130,7 +137,16 @@ public class NPlsWebController {
 
 
 
-            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getRemoteAddr();
+            String ipAddress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = request.getRemoteAddr();
+            }
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate localDate = LocalDate.now();
+            String userDate = dtf.format(localDate);
+
+            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
 
             //System.out.println("Session id "+sessionId);
 
@@ -172,7 +188,16 @@ public class NPlsWebController {
 
                 npScorerService.setMolecules(readerService.getMolecules());
 
-                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getRemoteAddr();
+                String ipAddress = request.getHeader("X-FORWARDED-FOR");
+                if (ipAddress == null) {
+                    ipAddress = request.getRemoteAddr();
+                }
+
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                LocalDate localDate = LocalDate.now();
+                String userDate = dtf.format(localDate);
+
+                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
 
                 npScorerService.setSesstionId(sessionId);
 
@@ -210,7 +235,7 @@ public class NPlsWebController {
     @GetMapping("/results")
     public String showResults(Model model) throws IOException{
 
-        model.addAttribute("numberOfProcessedMolecules", ""+readerService.getMolecules().keySet().size()+"");
+        //model.addAttribute("numberOfProcessedMolecules", ""+readerService.getMolecules().keySet().size()+"");
 
 
 
@@ -228,11 +253,25 @@ public class NPlsWebController {
         else {
 
             // sending all user molecules with all scores
-            model.addAttribute("scores", npScorerService.returnResultsAsUserUploadedMolecules());
+            String ipAddress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = request.getRemoteAddr();
+            }
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate localDate = LocalDate.now();
+            String userDate = dtf.format(localDate);
+
+            String thisSessionId =  RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
+
+            model.addAttribute("scores", npScorerService.returnResultsAsUserUploadedMolecules( thisSessionId ));
             System.out.println("in results");
 
 
-            //fillPlotData();
+            //FINDING data for the plot
+            if(!this.plotData.isInitialised){
+                fillPlotData();
+            }
 
 
             model.addAttribute( "npXdataNP" ,  this.plotData.npXnp );
@@ -325,6 +364,8 @@ public class NPlsWebController {
             model.addAttribute("npYac300", this.plotData.npYac300);
 
 
+            model.addAttribute("globalCounts", this.plotData.globalCounts);
+
 
 
         }
@@ -351,9 +392,9 @@ public class NPlsWebController {
      * from the index / page, is there are files that have been submitted, lists them, without launching the NPLS computation
      */
     @GetMapping("/")
-    public String listUploadedFiles(Model model) throws IOException {
+    public String indexPageMethod(Model model) throws IOException {
 
-        String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getRemoteAddr();
+        String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent");
 
         List<String> fileList =storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(NPlsWebController.class,
@@ -368,7 +409,10 @@ public class NPlsWebController {
         }
 
         //FINDING data for the plot
-        fillPlotData();
+        if(!this.plotData.isInitialised){
+            fillPlotData();
+        }
+
 
         model.addAttribute( "npXdataNP" ,  this.plotData.npXnp );
         model.addAttribute( "npYdataNP" ,  this.plotData.npYnp );
@@ -460,6 +504,9 @@ public class NPlsWebController {
         model.addAttribute("npYac300", this.plotData.npYac300);
 
 
+        model.addAttribute("globalCounts", this.plotData.globalCounts);
+
+
 
 
         model.addAttribute("files", filesToServe);
@@ -468,6 +515,67 @@ public class NPlsWebController {
 
         return "index";
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     *
+     * @param filename
+     * @return
+     *
+     * from page / when files have been submitted, serves the files (loads)
+     */
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+
+
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+
+    /**
+     * Handles file not found and file not uploaded situations
+     * @param exc
+     * @return
+     */
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().build();
+    }
+
+
+
+
+    //Cast multipart spring file to conventional file
+    public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException
+    {
+        File convFile = new File( multipart.getOriginalFilename());
+        multipart.transferTo(convFile);
+        return convFile;
+    }
+
+
+
+
+
+
+
+
+
 
     public void fillPlotData(){
 
@@ -507,6 +615,33 @@ public class NPlsWebController {
             this.plotData.npScoresAC100200 = npScorerService.returnAllNPLScoresAC100200();
             this.plotData.npScoresAC200300 = npScorerService.returnAllNPLScoresAC200300();
             this.plotData.npScoresAC300 = npScorerService.returnAllNPLScoresAC300();
+
+
+
+            // Get counts
+
+            this.plotData.globalCounts = new Hashtable<>();
+            this.plotData.globalCounts.put("countAllNP", moleculeRepository.countAllNP());
+            this.plotData.globalCounts.put("countAllSM", moleculeRepository.countAllSM());
+            this.plotData.globalCounts.put("countOld2102", moleculeRepository.countAllNPBySource("OLD2012"));
+            this.plotData.globalCounts.put("countSUPERNATURAL", moleculeRepository.countAllNPBySource("SUPERNATURAL"));
+            this.plotData.globalCounts.put("countCHEBI", moleculeRepository.countAllNPBySource("CHEBI"));
+            this.plotData.globalCounts.put("countTCMDB", moleculeRepository.countAllNPBySource("TCMDB"));
+            this.plotData.globalCounts.put("countZINCNP", moleculeRepository.countAllNPBySource("ZINC"));
+            this.plotData.globalCounts.put("countPUBCHEM", moleculeRepository.countAllNPBySource("PUBCHEM"));
+            this.plotData.globalCounts.put("countCHEMBL", moleculeRepository.countAllNPBySource("CHEMBL"));
+            this.plotData.globalCounts.put("countNPATLAS", moleculeRepository.countAllNPBySource("NPATLAS"));
+            this.plotData.globalCounts.put("countNUBBE", moleculeRepository.countAllNPBySource("NUBBE"));
+            this.plotData.globalCounts.put("countSANCDB", moleculeRepository.countAllNPBySource("SANCDB"));
+            this.plotData.globalCounts.put("countAFRODB", moleculeRepository.countAllNPBySource("AFRODB"));
+            this.plotData.globalCounts.put("countDRUGBANK", moleculeRepository.countAllDrugbank());
+            this.plotData.globalCounts.put("countBacteria", moleculeRepository.countAllNPInBacteria());
+            this.plotData.globalCounts.put("countPlants", moleculeRepository.countAllNPInPlants());
+            this.plotData.globalCounts.put("countFungi", moleculeRepository.countAllNPInFungi());
+
+
+
+
 
             //SERIALIZE
             try{
@@ -654,9 +789,18 @@ public class NPlsWebController {
                 fos.close();
 
 
+                fos = new FileOutputStream("archive/globalCounts.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.globalCounts);
+                oos.close();
+                fos.close();
+
+
 
 
             }catch(IOException ioe) { ioe.printStackTrace(); }
+
+
 
         }
         else{
@@ -798,13 +942,19 @@ public class NPlsWebController {
                 ois.close();
                 fis.close();
 
+                fis = new FileInputStream("archive/globalCounts.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.globalCounts = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
 
 
             }catch(IOException ioe) { ioe.printStackTrace();
             }catch(ClassNotFoundException c) { c.printStackTrace(); }
 
 
-
+            this.plotData.isInitialised=true;
         }
 
 
@@ -995,60 +1145,6 @@ public class NPlsWebController {
 
 
 
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     *
-     * @param filename
-     * @return
-     *
-     * from page / when files have been submitted, serves the files (loads)
-     */
-    @GetMapping("/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-
-
-        Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-    }
-
-
-    /**
-     * Handles file not found and file not uploaded situations
-     * @param exc
-     * @return
-     */
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
-    }
-
-
-
-
-    //Cast multipart spring file to conventional file
-    public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException
-    {
-        File convFile = new File( multipart.getOriginalFilename());
-        multipart.transferTo(convFile);
-        return convFile;
     }
 
 

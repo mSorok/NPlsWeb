@@ -160,4 +160,40 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
 
 
+
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE is_a_np=1")
+    Integer countAllNP();
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE is_a_np=0")
+    Integer countAllSM();
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE source= :source AND is_a_np=1")
+    Integer countAllNPBySource(@Param("source") String source);
+
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1 AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%'")
+    Integer countAllNPInBacteria();
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1 AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'f%'")
+    Integer countAllNPInFungi();
+
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR source='NUBBE' OR source='AFRODB' ) ")
+    Integer countAllNPInPlants();
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE source='DRUGBANK' ")
+    Integer countAllDrugbank();
+
+
+
+
+
+
+
 }

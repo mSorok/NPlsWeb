@@ -6,18 +6,17 @@
     <link rel="stylesheet" href="/css/main.css" />
 
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+<!--
     <link rel="stylesheet" href="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.css" type="text/css">
     <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.js"></script>
 
 
     <link rel="stylesheet" href="ChemDoodleWeb-8.0.0/install/uis/jquery-ui-1.11.4.css" type="text/css">
     <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/uis/ChemDoodleWeb-uis.js"></script>
+-->
 
-    <!--  import  script src = 'lactame.... copenchemlib-core.js'
-    // new molecule editor > openchemlib-full
-    // OCL.StructureEditor
-    editor.getSmiles or getMolFile -->
-
+    <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
 
 
 
@@ -34,12 +33,16 @@
 
 <body>
 
+
+
+
 <div id="headercheminf">
 
-    <a href="cheminf.uni-jena.de"><img src="/img/cropped-Title_dec_2017.png"></a>
-    <h1>Natural Product Likeness Scorer</h1>
+    <a href="https://cheminf.uni-jena.de"><img style="max-width: 100%; max-height:100%;float:right;" src="/img/npls_banner.jpeg"></a>
 </div>
 
+
+<img src="/img/pleasewait.gif" id="waitimg" style="display: none ; position: fixed; height:150px;width:150px; top:0;left:0;right:0;bottom:0;margin:auto;z-index: 2;"/>
 
 
 <div id="container">
@@ -72,11 +75,10 @@
 
 
         <h2>Upload a molecular file</h2>
-        <form method="POST" enctype="multipart/form-data" action="/file">
-        <!--<form action="#" th:action="@{/smiles}" method="post" > -->
+        <form id="fileUpload" method="POST" enctype="multipart/form-data" action="/file">
             <table>
                 <tr><td>Molecular file to upload :</td><td><input type="file" name="file" /></td></tr>
-                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 200</small></td><td><input type="submit" value="Upload & start scorer" /></td></tr>
+                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 200</small></td><td><input type="submit" value="Upload & start scorer"  id="files-button"/></td></tr>
             </table>
         </form>
 
@@ -90,10 +92,10 @@
         </div>
 
         <h2>Paste SMILES</h2>
-        <form method="POST" enctype="text/plain" action="/smiles">
+        <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles">
             <table>
                 <tr><td>SMILES: </td><td><input type="text" name="smiles" cols="45" /></td></tr>
-                <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" /></td></tr>
+                <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" id="smiles-button"/></td></tr>
             </table>
 
         </form>
@@ -108,28 +110,17 @@
     <div id="fill3"></div>
 
 
-    <div id="chemDoodleSketcher">
+    <div id="oclContainer">
+        <br>
+        <br>
         <h2>Draw a molecule</h2>
 
         <table>
 
             <tr><td>
-
-
+                <div id="editor" style="width: 500px; height:400px; border: solid; border-width:1px; position:relative;"></div>
                 <script>
-
-                    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
-
-                    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 400, {useServices:false, oneMolecule:true});
-                    sketcher.specs.atoms_displayTerminalCarbonLabels_2D = true;
-                    sketcher.specs.atoms_useJMOLColors = true;
-                    sketcher.specs.bonds_clearOverlaps_2D = true;
-                    sketcher.specs.shapes_color = 'c10000';
-
-
-                    sketcher.repaint();
-
-
+                    let editor = OCL.StructureEditor.createEditor("editor");
                 </script>
 
             </td></tr>
@@ -137,7 +128,7 @@
             <tr>
 
                 <td>
-                   <button class="submit-mol-button">Submit molecule</button>
+                    <button class="submit-mol-button-ocl">Submit molecule</button>
                 </td>
 
 
@@ -152,25 +143,10 @@
 
     </div>
 
-
-
-<!--
-    <div id="listSubmittedFiles">
-        <div th:if="${not #lists.isEmpty(files)}">
-            Uploaded files:
-            <ul>
-                <li th:each="file : ${files}">
-                    <a th:href="${file}" th:text="${file}" />
-                </li>
-            </ul>
-        </div>
-
-    </div>
-   -->
-
-
-
 </div>
+
+
+
 
 <div id="distributions_no_user_score_parent">
     <h2>Distribution of NP-likeness score across databases, taxonomy and molecular size</h2>
@@ -180,7 +156,7 @@
     <div id="bibliography">
         <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
             In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
-        <p>more to add</p>
+        <p></p>
     </div>
 </div>
 
@@ -196,27 +172,65 @@
 
 
 <script>
-    $('.submit-mol-button').click(function(){
-        //alert(ChemDoodle.writeMOL(sketcher.getMolecule()));
+    /*
+        $('.submit-mol-button').click(function(){
+            //alert(ChemDoodle.writeMOL(sketcher.getMolecule()));
 
 
+            $.ajax
+            ({
+                url: '/drawing',
+                data: JSON.stringify(ChemDoodle.writeMOL(sketcher.getMolecule())) ,
+                type: 'POST',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function(){window.location.href = "/results"; },
+                //error: function(xhr, status, error) {
+
+                  //  alert();
+                //},
+                success: function () {
+                    window.location.href = "/results";
+                }
+            });
+        });
+    */
+
+
+    /* ****** SHOW WAITING IMAGE *********** */
+    $('.submit-mol-button-ocl').click(function(){
+
+        $('#waitimg').show();
         $.ajax
         ({
             url: '/drawing',
-            data: JSON.stringify(ChemDoodle.writeMOL(sketcher.getMolecule())) ,
+            data: JSON.stringify(editor.getMolFile() ) ,
             type: 'POST',
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             error: function(){window.location.href = "/results"; },
             //error: function(xhr, status, error) {
 
-              //  alert();
+            //  alert();
             //},
             success: function () {
+                $('#waitimg').hide();
                 window.location.href = "/results";
             }
         });
+
     });
+
+    document.getElementById("smiles-button").addEventListener("click", function(evt){
+        document.getElementById("waitimg").style.display = 'block';
+    });
+
+    document.getElementById("files-button").addEventListener("click", function(evt){
+        document.getElementById("waitimg").style.display = 'block';
+    });
+
+
+
 </script>
 
 
@@ -296,6 +310,10 @@
     let npYac300 = /*[[${npYac300}]]*/ 'default';
 
 
+    let globalCounts = /*[[${globalCounts}]]*/ 'default';
+
+
+
 
 
     // data obtained
@@ -315,7 +333,7 @@
         y: npYdata ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Natural Products (all)',
+        name: 'All Natural Products ('+globalCounts.countAllNP +')' ,
         line: {
             shape: 'spline',
             // color: 'rgb(0, 152, 76)',
@@ -336,7 +354,7 @@
         y: npYdataSM ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Synthetic Products (all)',
+        name: 'All Synthetic Products ('+globalCounts.countAllSM+')',
         line: {
             shape: 'spline',
             // color: 'rgb(76, 0, 153)',
@@ -355,7 +373,7 @@
         y: npYdataBACTERIA ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Bacteria',
+        name: 'Bacteria ('+globalCounts.countBacteria+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -374,7 +392,7 @@
         y: npYdataFUNGI ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Fungi',
+        name: 'Fungi ('+globalCounts.countFungi+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -393,7 +411,7 @@
         y: npYdataPLANTS ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Plants',
+        name: 'Plants ('+globalCounts.countPlants+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -415,7 +433,7 @@
         y: npYdataCHEBI ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEBI Natural Products',
+        name: 'ChEBI Natural Products ('+globalCounts.countCHEBI+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -434,7 +452,7 @@
         y: npYdataTCMDB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'TCMDB',
+        name: 'TCMDB ('+globalCounts.countTCMDB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -453,7 +471,7 @@
         y: npYdataZINCNP ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ZINC Natural Products',
+        name: 'ZINC Natural Products ('+globalCounts.countZINCNP+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -471,7 +489,7 @@
         y: npYdataPUBCHEM ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'PubChem Natural Products',
+        name: 'PubChem Natural Products ('+globalCounts.countPUBCHEM+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -489,7 +507,7 @@
         y: npYdataCHEMBL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEMBL Natural Products',
+        name: 'ChEMBL Natural Products ('+globalCounts.countCHEMBL+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -507,7 +525,7 @@
         y: npYdataNPATLAS ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'NP Atlas',
+        name: 'NP Atlas ('+globalCounts.countNPATLAS+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -525,7 +543,7 @@
         y: npYdataNUBBE ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'NuBBE',
+        name: 'NuBBE ('+globalCounts.countNUBBE+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -543,7 +561,7 @@
         y: npYdataSANCDB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'SANCDB',
+        name: 'SANCDB ('+globalCounts.countSANCDB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -561,7 +579,7 @@
         y: npYdataSUPERNATURAL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Supernatural II',
+        name: 'Supernatural II ('+globalCounts.countSUPERNATURAL+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -579,7 +597,7 @@
         y: npYdataAFRODB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'AfroDB',
+        name: 'AfroDB ('+globalCounts.countAFRODB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -597,7 +615,7 @@
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset',
+        name: 'Manually curated NP dataset ('+globalCounts.countOLD2012+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -634,7 +652,7 @@
         y: npYdataDRUGBANK ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'DrugBank',
+        name: 'DrugBank ('+globalCounts.countDRUGBANK+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -653,7 +671,7 @@
         y: npYac100 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size < 100 atoms',
+        name: 'molecule size < 100 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -669,7 +687,7 @@
         y: npYac100200 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 100 and 200 atoms',
+        name: 'molecule size between 100 and 200 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -686,7 +704,7 @@
         y: npYac200300 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 200 and 300 atoms',
+        name: 'molecule size between 200 and 300 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -702,7 +720,7 @@
         y: npYac300 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size >=300 atoms',
+        name: 'molecule size >=300 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -751,3 +769,70 @@
 
 </body>
 </html>
+
+
+
+
+
+<!--
+
+    <div id="chemDoodleSketcher">
+        <h2>Draw a molecule</h2>
+
+        <table>
+
+            <tr><td>
+
+
+                <script>
+
+                    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
+
+                    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 400, {useServices:false, oneMolecule:true});
+                    sketcher.specs.atoms_displayTerminalCarbonLabels_2D = true;
+                    sketcher.specs.atoms_useJMOLColors = true;
+                    sketcher.specs.bonds_clearOverlaps_2D = true;
+                    sketcher.specs.shapes_color = 'c10000';
+
+
+                    sketcher.repaint();
+
+
+                </script>
+
+            </td></tr>
+
+            <tr>
+
+                <td>
+                   <button class="submit-mol-button">Submit molecule</button>
+                </td>
+
+
+            </tr>
+
+
+        </table>
+
+        <br><br><strong>Confidentiality:</strong><br>
+        The molecules are kept confidential and will be deleted after processing.
+
+
+    </div>
+-->
+
+
+
+<!--
+    <div id="listSubmittedFiles">
+        <div th:if="${not #lists.isEmpty(files)}">
+            Uploaded files:
+            <ul>
+                <li th:each="file : ${files}">
+                    <a th:href="${file}" th:text="${file}" />
+                </li>
+            </ul>
+        </div>
+
+    </div>
+   -->

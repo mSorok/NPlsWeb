@@ -128,11 +128,15 @@ public class NpScorerService {
 
     }
 
-    public List<UserUploadedMolecule> returnResultsAsUserUploadedMolecules(){
+    public List<UserUploadedMolecule> returnResultsAsUserUploadedMolecules(String specificSessionId){
 
 
 
-        List<UserUploadedMolecule> results = uumr.findAllBySessionid(this.sesstionId);
+        List<UserUploadedMolecule> results = uumr.findAllBySessionid(specificSessionId);
+
+        for(UserUploadedMolecule umol : results){
+            umol.setSmiles( umol.getSmiles() ); //TODO prettify smiles
+        }
 
 
         return results;

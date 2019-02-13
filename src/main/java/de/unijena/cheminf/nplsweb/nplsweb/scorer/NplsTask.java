@@ -5,6 +5,7 @@ import de.unijena.cheminf.nplsweb.nplsweb.misc.BeanUtil;
 import de.unijena.cheminf.nplsweb.nplsweb.misc.LinearSugars;
 import de.unijena.cheminf.nplsweb.nplsweb.model.*;
 
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.depict.DepictionGenerator;
@@ -87,7 +88,7 @@ public class NplsTask implements Runnable{
         SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Absolute |
                 SmiFlavor.UseAromaticSymbols);
 
-        //DepictionGenerator dg = new DepictionGenerator().withSize(120, 120).withAtomColors();
+        DepictionGenerator dg = new DepictionGenerator().withSize(120, 120).withAtomColors();
 
         try{
 
@@ -104,9 +105,9 @@ public class NplsTask implements Runnable{
 
                 uum.setSessionid(this.sessionid);
 
-                uum.setSmiles(smilesGenerator.create(ac));
+                //uum.setSmiles(smilesGenerator.create(ac));
 
-                uum.setAtom_number(ac.getAtomCount());
+
 
 
 
@@ -163,20 +164,28 @@ public class NplsTask implements Runnable{
 
                     }
 
+
+
                 }
+
+
 
 
 
                 /**
                  * Computing for molecules with sugar removal
                  */
+                IAtomContainer sugarlessMolecule = null;
                 if(computeWithoutSugar){
 
 
                     Double sugarFreeScoreNP=0.0;
                     Double sugarFreeScoreSM=0.0;
 
-                    IAtomContainer sugarlessMolecule = removeSugars(ac);
+                    sugarlessMolecule = removeSugars(ac);
+
+
+
                     if (sugarlessMolecule != null) {
                         // run the fragments computation on it!
 
@@ -207,6 +216,7 @@ public class NplsTask implements Runnable{
                                     uumFrag.setSignature(f);
                                     uumFrag.setHeight(height);
                                     uumFrag.setComputed_with_sugar(0);
+
                                     uumfcpd.save(uumFrag);
 
                                 }
@@ -222,12 +232,34 @@ public class NplsTask implements Runnable{
                     uum.setNpl_score(sugarFreeScoreNP);
                     uum.setSml_score(sugarFreeScoreSM);
 
+
+                    sugarlessMolecule = AtomContainerManipulator.copyAndSuppressedHydrogens(sugarlessMolecule);
+                    uum.setSugar_free_atom_number(sugarlessMolecule.getAtomCount());
+
                 }
 
-                //dg.depict(ac).writeTo("./src/main/resources/static/img/"+uum.getUmol_id()+".png");
 
-                //uum.setDepictionLocation(uum.getUmol_id()+".png");
 
+
+
+
+
+                ac = AtomContainerManipulator.copyAndSuppressedHydrogens(ac);
+
+                dg.depict(ac).writeTo("./molimg/"+uum.getUmol_id()+".png");
+
+                uum.setDepictionLocation("/molimg/"+uum.getUmol_id()+".png");
+
+                uum.setAtom_number(ac.getAtomCount());
+
+                if(uum.getSugar_free_atom_number() == null || uum.getSugar_free_atom_number() == 0){
+                    uum.setSugar_free_atom_number(uum.getAtom_number());
+                }
+
+
+                uum.setSmiles(smilesGenerator.create(ac));
+
+                uum.setSugar_free_atom_number(sugarlessMolecule.getAtomCount());
 
                 uumr.save(uum);
             }

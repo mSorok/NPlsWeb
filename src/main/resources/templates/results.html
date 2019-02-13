@@ -9,13 +9,17 @@
     <link rel="stylesheet" href="/css/main.css" />
 
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" href="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.css" type="text/css">
+    <!--<link rel="stylesheet" href="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.css" type="text/css">
     <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/ChemDoodleWeb.js"></script>
 
 
     <link rel="stylesheet" href="ChemDoodleWeb-8.0.0/install/uis/jquery-ui-1.11.4.css" type="text/css">
     <script type="text/javascript" src="/ChemDoodleWeb-8.0.0/install/uis/ChemDoodleWeb-uis.js"></script>
 
+-->
+
+
+    <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -34,54 +38,46 @@
 
 <body>
 
+
 <div id="headercheminf">
-
-    <a href="cheminf.uni-jena.de"><img src="/img/cropped-Title_dec_2017.png"></a>
-    <h1>Natural Product Likeness Score calculator</h1>
-</div>
-
-
-<div th:if="${numberOfProcessedMolecules}">
-    <em>Processed <span th:text="${numberOfProcessedMolecules}">0</span> molecule(s) </em>
-    <br>
-
-    <strong>Scroll down for scores distribution plot</strong>
+    <a href="https://cheminf.uni-jena.de"><img style="max-width: 100%; max-height:100%;float:right;" src="/img/npls_banner.jpeg"></a>
 </div>
 
 
 
-<h3>NPL scores in this session:</h3>
+
+<div id="resultsBody">
+<div>
+    <br><br><br><br>
+    <strong>(Scroll down for scores distribution plot)</strong>
+</div>
+
+
+
+<h2>NPL scores in this session:</h2>
 <div id="resultsTable">
-
-    <table>
-        <tr th:each="score : ${scores}">
-            <td th:text="${score.getUu_id()}"></td>
-            <td>
-                <ul>
-                    <li th:text="${ 'NPL score: ' + #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }" />
-                    <li th:text="${ 'NPL score (with sugar): ' + #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }" />
-
-                </ul>
-            </td>
-
-        </tr>
-    </table>
-
-
 
     <table id="resultsTableTable" class="display">
         <thead>
         <tr>
             <th>Molecule id</th>
+            <th>SMILES</th>
             <th>NPL score</th>
-            <th>NPL score (with sugar)</th>
+            <th>Total atom count</th>
+            <th>Atom count without sugar</th>
+            <th>Structure</th>
+            <!--<th>NPL score (with sugar)</th>-->
         </tr>
         </thead>
         <tbody>
         <tr th:each="score : ${scores}">
             <td th:text="${score.getUu_id()}"></td>
+            <td th:text="${score.getSmiles()}"></td>
             <td th:text="${  #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }"></td>
-            <td th:text="${  #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }"></td>
+            <td th:text="${score.getAtom_number()}"></td>
+            <td th:text="${score.getSugar_free_atom_number()}"></td>
+            <td> <img th:src="${score.getDepictionLocation()}"> </td>
+            <!--<td th:text="${  #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }"></td>-->
         </tr>
 
         </tbody>
@@ -92,7 +88,7 @@
 </div>
 
 
-<div id="resubmit">
+<div id="resubmit" style="clear: both;">
     <br><br>
     <form action="/">
         <input type="submit" value="Compute new NP-likeness score(s)" />
@@ -101,19 +97,64 @@
 
 <div>
 
-    <strong>Clic on the databases or taxonomic kingdoms to toggle the NP-likeness distributions</strong>
+    <strong>Clic on the databases or taxonomic kingdoms to toggle the NP-likeness score distributions</strong>
 
 </div>
 
-<div id="npPanel"><!-- Plotly chart will be drawn inside this DIV --></div>
+<div id="npPanel" style="width: 100%; height:700px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 
 
+<div>
+
+    <!--<p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
+        In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>-->
+</div>
+
+
+<div id="resubmit">
+    <br><br>
+    <form action="/">
+        <input type="submit" value="Compute new NP-likeness score(s)" />
+    </form>
+</div>
+
+</div>
+
+
+
+<!--
+**********************************************************************************
+SCRIPTS
+-->
+
+
+<!-- table configuration-->
 <script>
     $(document).ready( function () {
-        $('#resultsTableTable').DataTable();
+        $('#resultsTableTable').DataTable(
+            {
+                dom: '<"top"ifl>rt<"bottom"Bp>',
+                buttons: [
+                    'colvis', 'excel', 'csv', 'copy'
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [ 4 ], //atom number without sugars
+                        "visible": false
+                    },
+                    {
+                        "className": "dt-center",
+                        "targets": "_all"
+                    }
+                ]
+            }
+
+        );
     } );
 </script>
 
+
+<!-- Plot -->
 <script th:inline="javascript">
     /*<![CDATA[*/
 
@@ -199,6 +240,8 @@
     // data obtained
     // ***************************************
 
+    let globalCounts = /*[[${globalCounts}]]*/ 'default';
+
 
 
     console.log( Plotly.BUILD );
@@ -225,7 +268,7 @@
         x: xnpuser,
         y: ynpuser,
         mode: 'markers',
-        name: 'Computed scores',
+        name: 'Computed score(s)',
         text: tnpuser,
         //textposition: 'top',
         type: 'scatter',
@@ -244,12 +287,13 @@
 
     // ***************************************
     // building object to trace for all NP
+    // building object to trace for all NP
     var traceNP = {
         x: npXdata,
         y: npYdata ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Natural Products (all)',
+        name: 'All Natural Products ('+globalCounts.countAllNP +')' ,
         line: {
             shape: 'spline',
             // color: 'rgb(0, 152, 76)',
@@ -270,7 +314,7 @@
         y: npYdataSM ,
         //legendgroup: 'general',
         mode: 'lines',
-        name: 'Synthetic Products (all)',
+        name: 'All Synthetic Products ('+globalCounts.countAllSM+')',
         line: {
             shape: 'spline',
             // color: 'rgb(76, 0, 153)',
@@ -289,7 +333,7 @@
         y: npYdataBACTERIA ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Bacteria',
+        name: 'Bacteria ('+globalCounts.countBacteria+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -308,7 +352,7 @@
         y: npYdataFUNGI ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Fungi',
+        name: 'Fungi ('+globalCounts.countFungi+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -327,7 +371,7 @@
         y: npYdataPLANTS ,
         //legendgroup: 'bytaxonomy',
         mode: 'lines',
-        name: 'Plants',
+        name: 'Plants ('+globalCounts.countPlants+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -349,7 +393,7 @@
         y: npYdataCHEBI ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEBI Natural Products',
+        name: 'ChEBI Natural Products ('+globalCounts.countCHEBI+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -368,7 +412,7 @@
         y: npYdataTCMDB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'TCMDB',
+        name: 'TCMDB ('+globalCounts.countTCMDB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -387,7 +431,7 @@
         y: npYdataZINCNP ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ZINC Natural Products',
+        name: 'ZINC Natural Products ('+globalCounts.countZINCNP+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -405,7 +449,7 @@
         y: npYdataPUBCHEM ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'PubChem Natural Products',
+        name: 'PubChem Natural Products ('+globalCounts.countPUBCHEM+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -423,7 +467,7 @@
         y: npYdataCHEMBL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ChEMBL Natural Products',
+        name: 'ChEMBL Natural Products ('+globalCounts.countCHEMBL+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -441,7 +485,7 @@
         y: npYdataNPATLAS ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'NP Atlas',
+        name: 'NP Atlas ('+globalCounts.countNPATLAS+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -459,7 +503,7 @@
         y: npYdataNUBBE ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'NuBBE',
+        name: 'NuBBE ('+globalCounts.countNUBBE+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -477,7 +521,7 @@
         y: npYdataSANCDB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'SANCDB',
+        name: 'SANCDB ('+globalCounts.countSANCDB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -495,7 +539,7 @@
         y: npYdataSUPERNATURAL ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Supernatural II',
+        name: 'Supernatural II ('+globalCounts.countSUPERNATURAL+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -513,7 +557,7 @@
         y: npYdataAFRODB ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'AfroDB',
+        name: 'AfroDB ('+globalCounts.countAFRODB+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -531,7 +575,7 @@
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset',
+        name: 'Manually curated NP dataset ('+globalCounts.countOLD2012+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -568,7 +612,7 @@
         y: npYdataDRUGBANK ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'DrugBank',
+        name: 'DrugBank ('+globalCounts.countDRUGBANK+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -587,7 +631,7 @@
         y: npYac100 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size < 100 atoms',
+        name: 'molecule size < 100 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -603,7 +647,7 @@
         y: npYac100200 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 100 and 200 atoms',
+        name: 'molecule size between 100 and 200 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -620,7 +664,7 @@
         y: npYac200300 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 200 and 300 atoms',
+        name: 'molecule size between 200 and 300 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -636,7 +680,7 @@
         y: npYac300 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size >=300 atoms',
+        name: 'molecule size >=300 atoms (SM & NP)',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -680,20 +724,89 @@
     /*]]>*/
 </script>
 
-<div>
+<!--
 
-    <!--<p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
-        In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>-->
-</div>
+&lt;!&ndash; Molecule depiction TODO &ndash;&gt;
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
 
-<div id="resubmit">
-    <br><br>
-    <form action="/">
-        <input type="submit" value="Compute new NP-likeness score(s)" />
-    </form>
-</div>
 
+
+
+        let scores = /*[[${scores}]]*/ 'default';
+        window.addEventListener("load", draw);
+        function draw() {
+
+
+
+            for(var i=0; i< scores.length; i++) {
+                let molecule = scores[i];
+                var mol = OCL.Molecule.fromSmiles(molecule["smiles"]);
+
+                let molCanvas = "#canvas" + molecule["umol_id"];
+                console.log(molCanvas);
+                var ctx = document.querySelector(molCanvas).getContext('2d');
+
+
+                var img1 = new Image();
+                img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
+                img1.onload = function() {
+                    img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
+                    ctx.drawImage(img1, 100, 100);
+                    ctx.fillRect(0, 0, 150, 75);
+                }
+
+                img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
+
+            }
+        }
+
+
+
+
+
+
+
+
+    function drawMolecules(OCL) {
+
+        var smilesDrawer=new SmilesDrawer();
+        var canvas=document.createElement('canvas');
+        //console.log(document.getElementsByTagName('resultsTableTable') ) ;//[0].appendChild(canvas)
+
+
+/*
+
+
+        var results=[];
+        var start=new Date();
+        for (var smile of smiles) {
+            console.log(smile);
+            var data = SmilesDrawer.parse(smile);
+            smilesDrawer.draw(data, canvas);
+
+
+            var molecule=OCL.Molecule.fromSmiles(smile);
+            results.push({
+                smiles:smile,
+                svg: molecule.toSVG(200, 150, Math.random.toString(36), {fontWeight: 900}),
+                img: canvas.toDataURL()
+            })
+        }
+
+        API.createData('results', results);
+        API.createData('timePerSVG',(new Date()-start)/smiles.length);
+*/
+
+
+
+
+        /*]]>*/
+    }
+
+</script>
+-->
 
 </body>
 </html>
