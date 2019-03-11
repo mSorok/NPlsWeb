@@ -42,7 +42,7 @@
 </div>
 
 
-<img src="/img/pleasewait.gif" id="waitimg" style="display: none ; position: fixed; height:150px;width:150px; top:0;left:0;right:0;bottom:0;margin:auto;z-index: 2;"/>
+<img src="/img/pleasewait.gif" id="waitimg" style="display: none ; position: fixed; top:0;left:0;right:0;bottom:0;margin:auto;z-index: 2;"/>
 
 
 <div id="container">
@@ -56,10 +56,14 @@
         <h2>About</h2>
         Natural product-likeness of a molecule, <it>i.e.</it> similarity of this molecule to the structure space covered by natural products,
         is a useful criterion in screening compound libraries and in designing new lead compounds.
-        This NP-likeness scorer has been trained on XXXX NP from public databases (Supernatural II, ZINC natural products, ChEBI, TCMDB, PubChem, ChEMBL, NPAtlas, NuBBE, SANCDB and AFRODB)
-        on a manually curated NP dataset used for the publication of the previous standalone NP-likeness scorer [1] and on 500000 randomly selected synthetic molecules from the ZINC database.
+        This NP-likeness scorer has been trained on 315 916 natural products (NP) from various public databases,
+        on a manually curated NP dataset used for the publication of the previous standalone NP-likeness scorer [1]
+        and on 488 642 randomly selected synthetic molecules (SM) from the <a href="http://zinc15.docking.org/substances/subsets/">ZINC</a> database.
         <br>
-        <it>N.B. The stereochemistry is removed from the training set and from the user-submitted molecules.</it>
+        <br>
+        Sugar moieties are removed from the molecules for the training and for the computation of the NP-likeness score as in [2]
+        <br>
+        <it>The stereochemistry is removed from the training set and from the user-submitted molecules.</it>
 
         <br>
         <br>
@@ -102,7 +106,7 @@
 
         <div th:if="${notSmiles}" id="errorDiv">
 
-            <p>The pasted string could not be recognised as a SMILES</p>
+            <p>The pasted string is probably not a SMILES</p>
 
         </div>
     </div>
@@ -156,7 +160,8 @@
     <div id="bibliography">
         <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
             In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
-        <p></p>
+        <p>[2] Peter Ertl et al., Natural Product-likeness Score and Its Application for Prioritization of Compound Libraries.
+            In: Journal of Chemical Information and Modeling 48 (1), 68-74, 2008</p>
     </div>
 </div>
 
@@ -615,7 +620,7 @@
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset ('+globalCounts.countOLD2012+')',
+        name: 'Manually curated NP dataset ('+globalCounts.countOld2102+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',

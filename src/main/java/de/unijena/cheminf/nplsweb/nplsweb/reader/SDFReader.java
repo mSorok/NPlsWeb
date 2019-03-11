@@ -2,6 +2,7 @@ package de.unijena.cheminf.nplsweb.nplsweb.reader;
 
 import de.unijena.cheminf.nplsweb.nplsweb.misc.BeanUtil;
 import de.unijena.cheminf.nplsweb.nplsweb.misc.MoleculeChecker;
+import net.sf.jniinchi.INCHI_OPTION;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class SDFReader implements IReader {
 
@@ -82,7 +84,43 @@ public class SDFReader implements IReader {
                     molecule = moleculeChecker.checkMolecule(molecule);
 
 
+
+
+
+
                     if(molecule != null) {
+
+                        try {
+                            List options = new ArrayList();
+                            options.add(INCHI_OPTION.SNon);
+                            options.add(INCHI_OPTION.ChiralFlagOFF);
+                            options.add(INCHI_OPTION.AuxNone);
+                            InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
+
+                            molecule.setProperty("INCHIKEY", gen.getInchiKey());
+
+
+                        } catch (CDKException e) {
+                            Integer totalBonds = molecule.getBondCount();
+                            Integer ib = 0;
+                            while (ib < totalBonds) {
+
+                                IBond b = molecule.getBond(ib);
+                                if (b.getOrder() == IBond.Order.UNSET) {
+                                    b.setOrder(IBond.Order.SINGLE);
+
+                                }
+                                ib++;
+                            }
+                            List options = new ArrayList();
+                            options.add(INCHI_OPTION.SNon);
+                            options.add(INCHI_OPTION.ChiralFlagOFF);
+                            options.add(INCHI_OPTION.AuxNone);
+                            InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
+
+                            molecule.setProperty("INCHIKEY", gen.getInchiKey());
+
+                        }
 
                         this.molecules.put(molecule.getID(), molecule);
                     }

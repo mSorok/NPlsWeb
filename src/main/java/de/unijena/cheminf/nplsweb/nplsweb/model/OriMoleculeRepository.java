@@ -17,8 +17,8 @@ public interface OriMoleculeRepository extends CrudRepository<OriMolecule, Integ
 
     List<OriMolecule> findBySource(String source);
 
-
-    List<OriMolecule> findAllByInchikey(String inchikey);
+    @Query(nativeQuery = true, value = "SELECT source, ori_mol_id FROM ori_molecule WHERE inchikey=:inchikey")
+    List<Object[]> findSourcesByInchikey(@Param("inchikey") String inchikey);
 
     List<OriMolecule> findByInchikeyAndSource(String inchikey, String source);
 

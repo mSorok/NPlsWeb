@@ -8,8 +8,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/molimg/**").addResourceLocations("file:" + NPlsWebApplication.IMAGE_DIR);
-        super.addResourceHandlers(registry);
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/molimg/**")
+                .addResourceLocations("/molimg/", "file:molimg/");
     }
+
 }

@@ -14,9 +14,7 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     List<Molecule> findAll();
 
 
-
-
-
+    Molecule findByInchikey(String inchikey);
 
 
 
@@ -90,7 +88,7 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     List<Object[]> getNPLSinFUNGI();
 
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR source='NUBBE' OR source='AFRODB')")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB')")
     List<Object[]> getNPLSinPLANTS();
 
     //BY SIZE
@@ -184,7 +182,7 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     Integer countAllNPInFungi();
 
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR source='NUBBE' OR source='AFRODB' ) ")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB' ) ")
     Integer countAllNPInPlants();
 
     @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE source='DRUGBANK' ")

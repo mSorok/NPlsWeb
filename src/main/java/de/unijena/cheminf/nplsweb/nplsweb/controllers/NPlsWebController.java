@@ -35,14 +35,19 @@ import java.util.stream.Collectors;
 public class NPlsWebController {
 
     private final StorageService storageService;
+
     @Autowired
     MoleculeRepository moleculeRepository;
+
     @Autowired
     HttpServletRequest request;
+
     @Autowired
     ReaderService readerService;
+
     @Autowired
     NpScorerService npScorerService;
+
     @Autowired
     UserInputMoleculeReaderService userInputMoleculeReaderService;
 

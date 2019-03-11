@@ -21,6 +21,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,10 @@ public class NplsTask implements Runnable{
     @Transient
     UserUploadedMoleculeFragmentCpdRepository uumfcpd;
 
+    @Autowired
+    @Transient
+    OriMoleculeRepository omr;
+
 
     private String sessionid;
 
@@ -84,6 +89,7 @@ public class NplsTask implements Runnable{
         //this.cpdRepository = BeanUtil.getBean(MoleculeFragmentCpdRepository.class);
         this.uumr = BeanUtil.getBean(UserUploadedMoleculeRepository.class);
         this.uumfcpd = BeanUtil.getBean(UserUploadedMoleculeFragmentCpdRepository.class);
+        this.omr = BeanUtil.getBean(OriMoleculeRepository.class);
 
         SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Absolute |
                 SmiFlavor.UseAromaticSymbols);
@@ -108,7 +114,7 @@ public class NplsTask implements Runnable{
                 //uum.setSmiles(smilesGenerator.create(ac));
 
 
-
+                uum.setInchikey(ac.getProperty("INCHIKEY").toString());
 
 
 
@@ -170,8 +176,6 @@ public class NplsTask implements Runnable{
 
 
 
-
-
                 /**
                  * Computing for molecules with sugar removal
                  */
@@ -192,6 +196,7 @@ public class NplsTask implements Runnable{
                         List<String> allFragments = generateAtomSignatures(sugarlessMolecule, height);
                         Double scoreNP=0.0;
                         Double scoreSM=0.0;
+
 
                         if(allFragments != null) {
 
@@ -241,14 +246,17 @@ public class NplsTask implements Runnable{
 
 
 
+                System.out.println(smilesGenerator.create(ac));
 
 
+                ac = AtomContainerManipulator.suppressHydrogens(ac);
 
-                ac = AtomContainerManipulator.copyAndSuppressedHydrogens(ac);
 
                 dg.depict(ac).writeTo("./molimg/"+uum.getUmol_id()+".png");
 
-                uum.setDepictionLocation("/molimg/"+uum.getUmol_id()+".png");
+                uum.setDepictionLocation("./molimg/"+uum.getUmol_id()+".png");
+
+
 
                 uum.setAtom_number(ac.getAtomCount());
 
@@ -260,6 +268,43 @@ public class NplsTask implements Runnable{
                 uum.setSmiles(smilesGenerator.create(ac));
 
                 uum.setSugar_free_atom_number(sugarlessMolecule.getAtomCount());
+
+
+
+                List<Object[]>  oriMolecules = omr.findSourcesByInchikey(uum.getInchikey());
+
+                if(oriMolecules != null && !oriMolecules.isEmpty()){
+                    uum.setIs_in_any_source(1);
+
+
+                    String omsources = "";
+                    for(Object[] obj : oriMolecules){
+                        String source = obj[0].toString();
+                        String ori_mol_id = obj[1].toString();
+                        if(!source.equals("OLD2012")) {
+                            if(source.equals("CHEBI")) {
+                                omsources = omsources + ori_mol_id + ";";
+                            }
+                            else if(source.equals("NUBBE")){
+                                String [] tab = ori_mol_id.split("\\$");
+                                omsources = omsources + source + ": " + tab[0] + ";";
+                            }
+                            else{
+                                omsources = omsources + source + ": " + ori_mol_id + ";";
+                            }
+                        }
+
+                    }
+                    uum.setSources(omsources);
+                    if(omsources.equals("")){
+                        uum.setIs_in_any_source(0);
+                    }
+                }
+                else{
+                    uum.setIs_in_any_source(0);
+                }
+
+
 
                 uumr.save(uum);
             }
@@ -317,9 +362,16 @@ public class NplsTask implements Runnable{
 
     private IAtomContainer removeSugars(IAtomContainer molecule){
 
+        IAtomContainer newMolecule = null;
+        try {
+            newMolecule = molecule.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
         try {
 
-            IRingSet ringset = Cycles.sssr(molecule).toRingSet();
+            IRingSet ringset = Cycles.sssr(newMolecule).toRingSet();
 
             // RING SUGARS
             for (IAtomContainer one_ring : ringset.atomContainers()) {
@@ -330,11 +382,11 @@ public class NplsTask implements Runnable{
 
                     if (formula.equals("C5O") | formula.equals("C4O") | formula.equals("C6O")) {
                         if (IBond.Order.SINGLE.equals(bondorder)) {
-                            if (shouldRemoveRing(one_ring, molecule, ringset) == true) {
+                            if (shouldRemoveRing(one_ring, newMolecule, ringset) == true) {
                                 for (IAtom atom : one_ring.atoms()) {
                                     {
 
-                                        molecule.removeAtom(atom);
+                                        newMolecule.removeAtom(atom);
                                     }
                                 }
                             }
@@ -345,8 +397,8 @@ public class NplsTask implements Runnable{
                     return null;
                 }
             }
-            Map<Object, Object> properties = molecule.getProperties();
-            IAtomContainerSet molset = ConnectivityChecker.partitionIntoMolecules(molecule);
+            Map<Object, Object> properties = newMolecule.getProperties();
+            IAtomContainerSet molset = ConnectivityChecker.partitionIntoMolecules(newMolecule);
             for (int i = 0; i < molset.getAtomContainerCount(); i++) {
                 molset.getAtomContainer(i).setProperties(properties);
                 int size = molset.getAtomContainer(i).getBondCount();

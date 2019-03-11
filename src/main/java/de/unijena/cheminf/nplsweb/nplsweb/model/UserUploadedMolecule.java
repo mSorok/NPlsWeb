@@ -5,6 +5,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name="user_uploaded_molecule" , indexes = {  @Index(name = "IDXI", columnList = "inchikey"  )})
 public class UserUploadedMolecule {
 
 
@@ -17,9 +18,14 @@ public class UserUploadedMolecule {
     @Column(length=1200)
     private String smiles;
 
+    private String inchikey;
+
     private Date submissionDate;
 
-    private Integer isInMolecule;
+
+    private Integer is_in_any_source;
+
+    private String sources;
 
     private Integer addedToMolecule;
 
@@ -73,13 +79,6 @@ public class UserUploadedMolecule {
         this.submissionDate = submissionDate;
     }
 
-    public Integer getIsInMolecule() {
-        return isInMolecule;
-    }
-
-    public void setIsInMolecule(Integer isInMolecule) {
-        this.isInMolecule = isInMolecule;
-    }
 
     public Integer getAddedToMolecule() {
         return addedToMolecule;
@@ -162,4 +161,27 @@ public class UserUploadedMolecule {
         this.sugar_free_atom_number = sugar_free_atom_number;
     }
 
+    public Integer getIs_in_any_source() {
+        return is_in_any_source;
+    }
+
+    public void setIs_in_any_source(Integer is_in_any_source) {
+        this.is_in_any_source = is_in_any_source;
+    }
+
+    public String getSources() {
+        return sources;
+    }
+
+    public void setSources(String sources) {
+        this.sources = sources;
+    }
+
+    public String getInchikey() {
+        return inchikey;
+    }
+
+    public void setInchikey(String inchikey) {
+        this.inchikey = inchikey;
+    }
 }

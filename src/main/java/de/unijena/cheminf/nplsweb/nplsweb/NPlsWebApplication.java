@@ -11,6 +11,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.io.File;
+import java.io.IOException;
+
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
@@ -19,8 +22,11 @@ public class NPlsWebApplication {
 
 
     public static void main(String[] args) {
-        IMAGE_DIR = "./molimg/";
-        SpringApplication.run(NPlsWebApplication.class, args);
+
+            IMAGE_DIR = "./molimg/";
+            SpringApplication.run(NPlsWebApplication.class, args);
+
+
     }
 
 

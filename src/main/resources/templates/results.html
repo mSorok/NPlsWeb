@@ -60,23 +60,35 @@
     <table id="resultsTableTable" class="display">
         <thead>
         <tr>
-            <th>Molecule id</th>
+            <th>Structure</th>
+            <th>NPls unique id</th>
             <th>SMILES</th>
             <th>NPL score</th>
             <th>Total atom count</th>
             <th>Atom count without sugar</th>
-            <th>Structure</th>
+            <th>Present in databases as NP</th>
             <!--<th>NPL score (with sugar)</th>-->
         </tr>
         </thead>
         <tbody>
         <tr th:each="score : ${scores}">
+            <td> <img th:src="${score.getDepictionLocation()}"> </td>
             <td th:text="${score.getUu_id()}"></td>
             <td th:text="${score.getSmiles()}"></td>
             <td th:text="${  #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }"></td>
             <td th:text="${score.getAtom_number()}"></td>
             <td th:text="${score.getSugar_free_atom_number()}"></td>
-            <td> <img th:src="${score.getDepictionLocation()}"> </td>
+            <td th:switch="${score.getIs_in_any_source()}">
+                <div th:case="0"><p>No</p></div>
+                <div th:case="1">
+                    <ul th:each="source : ${#strings.arraySplit(score.getSources(), ';')}" style="list-style-type:none;line-height:40%;text-align:left;">
+
+                            <li th:text="${source}"></li>
+
+                    </ul>
+                </div>
+                <div th:case="*"><p>No</p></div>
+            </td>
             <!--<td th:text="${  #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }"></td>-->
         </tr>
 
@@ -139,7 +151,7 @@ SCRIPTS
                 ],
                 "columnDefs": [
                     {
-                        "targets": [ 4 ], //atom number without sugars
+                        "targets": [ 5 ], //atom number without sugars
                         "visible": false
                     },
                     {
@@ -575,7 +587,7 @@ SCRIPTS
         y: npYdataOLD2012 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'Manually curated NP dataset ('+globalCounts.countOLD2012+')',
+        name: 'Manually curated NP dataset ('+globalCounts.countOld2102+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',

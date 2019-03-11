@@ -11,6 +11,8 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IPseudoAtom;
+import org.openscience.cdk.smiles.SmiFlavor;
+import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
@@ -54,7 +56,12 @@ public class MoleculeChecker {
                     }
                 }
                 molecule = biggestComponent;
+                /*if(molecule.getAtomCount()<=6){
+                    return null;
+                }*/
             }
+
+
 
 
             // check ID
@@ -139,6 +146,8 @@ public class MoleculeChecker {
             } catch (IllegalArgumentException e) {
                 //System.out.println("Could not kekulize molecule "+ this.molecule.getID());
             }
+
+
 
             return molecule;
         }
