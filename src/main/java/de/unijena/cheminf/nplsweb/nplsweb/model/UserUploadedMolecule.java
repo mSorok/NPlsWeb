@@ -15,6 +15,8 @@ public class UserUploadedMolecule {
 
     private String uu_id;
 
+    private String sessionid;
+
     @Column(length=1200)
     private String smiles;
 
@@ -32,19 +34,46 @@ public class UserUploadedMolecule {
     private String depictionLocation;
 
 
-    private Integer sugar_free_atom_number;
-
     private Double npl_score;
 
     private Double npl_sugar_score;
 
-    private Double sml_score;
+    private Double npl_noh_score;
 
-    private Double sml_sugar_score;
+    private Integer heavy_atom_number;
 
-    private Integer atom_number;
+    private Integer total_atom_number;
 
-    private String sessionid;
+    private Integer sugar_free_total_atom_number;
+
+    private Integer sugar_free_heavy_atom_number;
+
+
+
+    private Integer containsSugar;
+
+    private Integer numberOfRings;
+
+    private String molecularFormula;
+
+    private Integer numberOfCarbons;
+
+    private Integer numberOfOxygens;
+
+    private Integer numberOfNitrogens;
+
+    private Double ratioCsize;
+
+    private Integer numberRepeatedFragments;
+
+    private Double molecularWeight;
+
+    @Column(length=1200)
+    private String unknown_fragments ;
+
+
+
+
 
 
 
@@ -104,28 +133,36 @@ public class UserUploadedMolecule {
         this.npl_sugar_score = npl_sugar_score;
     }
 
-    public Double getSml_score() {
-        return sml_score;
+    public Integer getHeavy_atom_number() {
+        return heavy_atom_number;
     }
 
-    public void setSml_score(Double sml_score) {
-        this.sml_score = sml_score;
+    public void setHeavy_atom_number(Integer heavy_atom_number) {
+        this.heavy_atom_number = heavy_atom_number;
     }
 
-    public Double getSml_sugar_score() {
-        return sml_sugar_score;
+    public Integer getTotal_atom_number() {
+        return total_atom_number;
     }
 
-    public void setSml_sugar_score(Double sml_sugar_score) {
-        this.sml_sugar_score = sml_sugar_score;
+    public void setTotal_atom_number(Integer total_atom_number) {
+        this.total_atom_number = total_atom_number;
     }
 
-    public Integer getAtom_number() {
-        return atom_number;
+    public Integer getSugar_free_total_atom_number() {
+        return sugar_free_total_atom_number;
     }
 
-    public void setAtom_number(Integer atom_number) {
-        this.atom_number = atom_number;
+    public void setSugar_free_total_atom_number(Integer sugar_free_total_atom_number) {
+        this.sugar_free_total_atom_number = sugar_free_total_atom_number;
+    }
+
+    public Integer getSugar_free_heavy_atom_number() {
+        return sugar_free_heavy_atom_number;
+    }
+
+    public void setSugar_free_heavy_atom_number(Integer sugar_free_heavy_atom_number) {
+        this.sugar_free_heavy_atom_number = sugar_free_heavy_atom_number;
     }
 
     public String getSessionid() {
@@ -153,14 +190,6 @@ public class UserUploadedMolecule {
     }
 
 
-    public Integer getSugar_free_atom_number() {
-        return sugar_free_atom_number;
-    }
-
-    public void setSugar_free_atom_number(Integer sugar_free_atom_number) {
-        this.sugar_free_atom_number = sugar_free_atom_number;
-    }
-
     public Integer getIs_in_any_source() {
         return is_in_any_source;
     }
@@ -183,5 +212,93 @@ public class UserUploadedMolecule {
 
     public void setInchikey(String inchikey) {
         this.inchikey = inchikey;
+    }
+
+    public Double getNpl_noh_score() {
+        return npl_noh_score;
+    }
+
+    public void setNpl_noh_score(Double npl_noh_score) {
+        this.npl_noh_score = npl_noh_score;
+    }
+
+    public Integer getContainsSugar() {
+        return containsSugar;
+    }
+
+    public void setContainsSugar(Integer containsSugar) {
+        this.containsSugar = containsSugar;
+    }
+
+    public Integer getNumberOfRings() {
+        return numberOfRings;
+    }
+
+    public void setNumberOfRings(Integer numberOfRings) {
+        this.numberOfRings = numberOfRings;
+    }
+
+    public String getMolecularFormula() {
+        return molecularFormula;
+    }
+
+    public void setMolecularFormula(String molecularFormula) {
+        this.molecularFormula = molecularFormula;
+    }
+
+    public Integer getNumberOfCarbons() {
+        return numberOfCarbons;
+    }
+
+    public void setNumberOfCarbons(Integer numberOfCarbons) {
+        this.numberOfCarbons = numberOfCarbons;
+    }
+
+    public Integer getNumberOfOxygens() {
+        return numberOfOxygens;
+    }
+
+    public void setNumberOfOxygens(Integer numberOfOxygens) {
+        this.numberOfOxygens = numberOfOxygens;
+    }
+
+    public Integer getNumberOfNitrogens() {
+        return numberOfNitrogens;
+    }
+
+    public void setNumberOfNitrogens(Integer numberOfNitrogens) {
+        this.numberOfNitrogens = numberOfNitrogens;
+    }
+
+    public Double getRatioCsize() {
+        return ratioCsize;
+    }
+
+    public void setRatioCsize(Double ratioCsize) {
+        this.ratioCsize = ratioCsize;
+    }
+
+    public Integer getNumberRepeatedFragments() {
+        return numberRepeatedFragments;
+    }
+
+    public void setNumberRepeatedFragments(Integer numberRepeatedFragments) {
+        this.numberRepeatedFragments = numberRepeatedFragments;
+    }
+
+    public Double getMolecularWeight() {
+        return molecularWeight;
+    }
+
+    public void setMolecularWeight(Double molecularWeight) {
+        this.molecularWeight = molecularWeight;
+    }
+
+    public String getUnknown_fragments() {
+        return unknown_fragments;
+    }
+
+    public void setUnknown_fragments(String unknown_fragments) {
+        this.unknown_fragments = unknown_fragments;
     }
 }

@@ -17,8 +17,6 @@ public class FragmentWithoutSugar {
 
     private Double scoreNP;
 
-    private Double scoreSM;
-
     public Integer getFragment_id() {
         return fragment_id;
     }
@@ -51,11 +49,5 @@ public class FragmentWithoutSugar {
         this.scoreNP = scoreNP;
     }
 
-    public Double getScoreSM() {
-        return scoreSM;
-    }
 
-    public void setScoreSM(Double scoreSM) {
-        this.scoreSM = scoreSM;
-    }
 }

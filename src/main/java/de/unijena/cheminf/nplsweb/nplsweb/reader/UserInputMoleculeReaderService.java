@@ -23,6 +23,7 @@ public class UserInputMoleculeReaderService {
             return false;
         }
 
+
         SmilesParser sp  = new SmilesParser(SilentChemObjectBuilder.getInstance());
         System.out.println(smiles);
         try {

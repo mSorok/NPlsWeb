@@ -114,10 +114,8 @@ public class NpScorerService {
 
         for(UserUploadedMolecule uum: results){
 
-            String s = uum.getUu_id() + " : NPL score (sugar removal): " + uum.getNpl_score() + "; NPL score (full molecule): "+uum.getNpl_sugar_score()+"; SML score (sugar removal): "+uum.getSml_score()
-                    +"; SML score (full molecule): " + uum.getSml_sugar_score();
+            String s = uum.getUu_id() + " : NPL score (sugar removal): " + uum.getNpl_score() + "; NPL score (full molecule): "+uum.getNpl_sugar_score();
 
-           // System.out.println(s);
 
             this.moleculeIdWithScores.add(s);
 
@@ -166,23 +164,7 @@ public class NpScorerService {
             maxscore = Double.parseDouble(obj2.toString());
 
         }
-        else if(plotType.equals("sm")){
-            Object obj1 = mr.getMinSMLScore().get(0);
-            minscore = Double.parseDouble((obj1.toString()));
 
-            Object obj2 = mr.getMaxSMLScore().get(0);
-            maxscore = Double.parseDouble(obj2.toString());
-
-        }
-        else if(plotType.equals("sm_sugar")){
-
-            Object obj1 = mr.getMinSMLSugarScore().get(0);
-            minscore = Double.parseDouble((obj1.toString()));
-
-            Object obj2 = mr.getMaxSMLSugarScore().get(0);
-            maxscore = Double.parseDouble(obj2.toString());
-
-        }
 
 
         Integer xmin = (int)Math.floor(minscore) ;
@@ -278,31 +260,50 @@ public class NpScorerService {
         return( computeBins(scores, returnxAxis("np")) );
     }
 
+
+
+
+
     //SCORES BY DB
-    public Hashtable<Double, Double> returnAllNPLScoresCHEBI(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinCHEBI();
+    public Hashtable<Double, Double> returnAllNPLScoresUEFS(){
 
-        return( computeBins(scores, returnxAxis("np")) );
-    }
-
-    public Hashtable<Double, Double> returnAllNPLScoresTCMDB(){
-
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinTCMDB();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinUEFS();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresZINCNP(){
+    public Hashtable<Double, Double> returnAllNPLScoresHIT(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinZINCNP();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinHIT();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresPUBCHEM(){
+    public Hashtable<Double, Double> returnAllNPLScoresSANCDB(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinPUBCHEM();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSANCDB();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresAFRODB(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinAFRODB();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresNPACT(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinNPACT();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresSELLECKCHEM(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSELLECKCHEM();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
@@ -314,13 +315,6 @@ public class NpScorerService {
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresNPATLAS(){
-
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinNPATLAS();
-
-        return( computeBins(scores, returnxAxis("np")) );
-    }
-
     public Hashtable<Double, Double> returnAllNPLScoresNUBBE(){
 
         List<Double> scores = (List<Double>)(Object) mr.getNPLSinNUBBE();
@@ -328,12 +322,87 @@ public class NpScorerService {
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresSANCDB(){
+    public Hashtable<Double, Double> returnAllNPLScoresSTREPTOMEDB(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSANCDB();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSTREPTOMEDB();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
+
+    public Hashtable<Double, Double> returnAllNPLScoresPUBCHEM(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinPUBCHEM();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresNANPDB(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinNANPDB();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresCHEBI(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinCHEBI();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresNPATLAS(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinNPATLAS();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresTCMDB(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinTCMDB();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresIBS(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinIBS();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresOLD2012(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinOLD2012();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresZINCNP(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinZINCNP();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresUNPD(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinUNPD();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresSUPENATURAL(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSUPERNATURAL();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+
+
+
+
 
     public Hashtable<Double, Double> returnAllNPLScoresDRUGBANK(){
 
@@ -349,26 +418,8 @@ public class NpScorerService {
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresOLD2012(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinOLD2012();
 
-        return( computeBins(scores, returnxAxis("np")) );
-    }
-
-    public Hashtable<Double, Double> returnAllNPLScoresSUPENATURAL(){
-
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinSUPERNATURAL();
-
-        return( computeBins(scores, returnxAxis("np")) );
-    }
-
-    public Hashtable<Double, Double> returnAllNPLScoresAFRODB(){
-
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSinAFRODB();
-
-        return( computeBins(scores, returnxAxis("np")) );
-    }
 
 
 
@@ -397,30 +448,30 @@ public class NpScorerService {
 
 
     //SCORES BY SIZE
-    public Hashtable<Double, Double> returnAllNPLScoresAC100(){
+    public Hashtable<Double, Double> returnAllNPLScoresACTranche1(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSac100();
-
-        return( computeBins(scores, returnxAxis("np")) );
-    }
-
-    public Hashtable<Double, Double> returnAllNPLScoresAC100200(){
-
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSac100_200();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSacTranche1();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresAC200300(){
+    public Hashtable<Double, Double> returnAllNPLScoresACTranche2(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSac200_300();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSacTranche2();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
 
-    public Hashtable<Double, Double> returnAllNPLScoresAC300(){
+    public Hashtable<Double, Double> returnAllNPLScoresACTranche3(){
 
-        List<Double> scores = (List<Double>)(Object) mr.getNPLSac300();
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSacTranche3();
+
+        return( computeBins(scores, returnxAxis("np")) );
+    }
+
+    public Hashtable<Double, Double> returnAllNPLScoresACTranche4(){
+
+        List<Double> scores = (List<Double>)(Object) mr.getNPLSacTranche4();
 
         return( computeBins(scores, returnxAxis("np")) );
     }
@@ -441,21 +492,6 @@ public class NpScorerService {
 
         return(computeBins(scores, returnxAxis("np_sugar")));
     }
-
-
-
-
-
-
-    //SCORES BY DB - WITH SUGARS
-
-
-
-    //SCORES BY ORGANISM - WITH SUGARS
-
-
-
-
 
 
 

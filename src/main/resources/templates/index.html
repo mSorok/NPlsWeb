@@ -78,7 +78,7 @@
 
 
 
-        <h2>Upload a molecular file</h2>
+        <h2>Upload a file</h2>
         <form id="fileUpload" method="POST" enctype="multipart/form-data" action="/file">
             <table>
                 <tr><td>Molecular file to upload :</td><td><input type="file" name="file" /></td></tr>
@@ -95,7 +95,7 @@
             <p>Bad file type. Files accepted: MOL, SDF, SMI</p>
         </div>
 
-        <h2>Paste SMILES</h2>
+        <h2>Paste SMILES string</h2>
         <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles">
             <table>
                 <tr><td>SMILES: </td><td><input type="text" name="smiles" cols="45" /></td></tr>
@@ -106,7 +106,7 @@
 
         <div th:if="${notSmiles}" id="errorDiv">
 
-            <p>The pasted string is probably not a SMILES</p>
+            <p>The pasted string is empty or is not a SMILES</p>
 
         </div>
     </div>
@@ -142,17 +142,25 @@
         </table>
 
         <br><br><strong>Confidentiality:</strong><br>
-        The molecules are kept confidential and will be deleted after processing.
+        The molecules are kept confidential and can be deleted after processing.
 
 
     </div>
 
+
+
+
+</div>
+
+<div id="fill4">
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
 </div>
 
 
-
-
 <div id="distributions_no_user_score_parent">
+
+
     <h2>Distribution of NP-likeness score across databases, taxonomy and molecular size</h2>
     <div id="distributions_no_user_score">
 
@@ -262,30 +270,78 @@
     let npXdataPLANTS = /*[[${npXplants}]]*/ 'default';
     let npYdataPLANTS = /*[[${npYplants}]]*/ 'default';
 
+
+
+
+
     //by DB
-    let npXdataCHEBI = /*[[${npXchebi}]]*/ 'default';
-    let npYdataCHEBI = /*[[${npYchebi}]]*/ 'default';
 
-    let npXdataTCMDB = /*[[${npXtcmdb}]]*/ 'default';
-    let npYdataTCMDB = /*[[${npYtcmdb}]]*/ 'default';
+    let npXdataUEFS = /*[[${npXuefs}]]*/ 'default';
+    let npYdataUEFS = /*[[${npYuefs}]]*/ 'default';
 
-    let npXdataZINCNP = /*[[${npXzincnp}]]*/ 'default';
-    let npYdataZINCNP = /*[[${npYzincnp}]]*/ 'default';
+    let npXdataHIT = /*[[${npXhit}]]*/ 'default';
+    let npYdataHIT = /*[[${npYhit}]]*/ 'default';
 
-    let npXdataPUBCHEM = /*[[${npXpubchem}]]*/ 'default';
-    let npYdataPUBCHEM = /*[[${npYpubchem}]]*/ 'default';
+    let npXdataSANCDB = /*[[${npXsancdb}]]*/ 'default';
+    let npYdataSANCDB = /*[[${npYsancdb}]]*/ 'default';
+
+    let npXdataAFRODB = /*[[${npXafrodb}]]*/ 'default';
+    let npYdataAFRODB = /*[[${npYafrodb}]]*/ 'default';
+
+    let npXdataNPACT = /*[[${npXnpact}]]*/ 'default';
+    let npYdataNPACT = /*[[${npYnpact}]]*/ 'default';
+
+    let npXdataSELLECKCHEM = /*[[${npXselleckchem}]]*/ 'default';
+    let npYdataSELLECKCHEM = /*[[${npYselleckchem}]]*/ 'default';
 
     let npXdataCHEMBL = /*[[${npXchembl}]]*/ 'default';
     let npYdataCHEMBL = /*[[${npYchembl}]]*/ 'default';
 
-    let npXdataNPATLAS = /*[[${npXnpatlas}]]*/ 'default';
-    let npYdataNPATLAS = /*[[${npYnpatlas}]]*/ 'default';
-
     let npXdataNUBBE = /*[[${npXnubbe}]]*/ 'default';
     let npYdataNUBBE = /*[[${npYnubbe}]]*/ 'default';
 
-    let npXdataSANCDB = /*[[${npXsancdb}]]*/ 'default';
-    let npYdataSANCDB = /*[[${npYsancdb}]]*/ 'default';
+    let npXdataSTREPTOMEDB = /*[[${npXstreptomedb}]]*/ 'default';
+    let npYdataSTREPTOMEDB = /*[[${npYstreptomedb}]]*/ 'default';
+
+    let npXdataPUBCHEM = /*[[${npXpubchem}]]*/ 'default';
+    let npYdataPUBCHEM = /*[[${npYpubchem}]]*/ 'default';
+
+    let npXdataNANPDB = /*[[${npXnanpdb}]]*/ 'default';
+    let npYdataNANPDB = /*[[${npYnanpdb}]]*/ 'default';
+
+    let npXdataCHEBI = /*[[${npXchebi}]]*/ 'default';
+    let npYdataCHEBI = /*[[${npYchebi}]]*/ 'default';
+
+    let npXdataNPATLAS = /*[[${npXnpatlas}]]*/ 'default';
+    let npYdataNPATLAS = /*[[${npYnpatlas}]]*/ 'default';
+
+    let npXdataTCMDB = /*[[${npXtcmdb}]]*/ 'default';
+    let npYdataTCMDB = /*[[${npYtcmdb}]]*/ 'default';
+
+    let npXdataIBS = /*[[${npXibs}]]*/ 'default';
+    let npYdataIBS = /*[[${npYibs}]]*/ 'default';
+
+    let npXdataOLD2012 = /*[[${npXold2012}]]*/ 'default';
+    let npYdataOLD2012 = /*[[${npYold2012}]]*/ 'default';
+
+    let npXdataZINCNP = /*[[${npXzincnp}]]*/ 'default';
+    let npYdataZINCNP = /*[[${npYzincnp}]]*/ 'default';
+
+    let npXdataUNPD = /*[[${npXunpd}]]*/ 'default';
+    let npYdataUNPD = /*[[${npYunpd}]]*/ 'default';
+
+    let npXdataSUPERNATURAL = /*[[${npXsupernatural}]]*/ 'default';
+    let npYdataSUPERNATURAL = /*[[${npYsupernatural}]]*/ 'default';
+
+
+
+
+
+
+
+
+
+
 
     let npXdataDRUGBANK = /*[[${npXdrugbank}]]*/ 'default';
     let npYdataDRUGBANK = /*[[${npYdrugbank}]]*/ 'default';
@@ -293,26 +349,22 @@
     let npXdataHMDB = /*[[${npXhmdb}]]*/ 'default';
     let npYdataHMDB = /*[[${npYhmdb}]]*/ 'default';
 
-    let npXdataOLD2012 = /*[[${npXold2012}]]*/ 'default';
-    let npYdataOLD2012 = /*[[${npYold2012}]]*/ 'default';
 
-    let npXdataSUPERNATURAL = /*[[${npXsupernatural}]]*/ 'default';
-    let npYdataSUPERNATURAL = /*[[${npYsupernatural}]]*/ 'default';
 
-    let npXdataAFRODB = /*[[${npXafrodb}]]*/ 'default';
-    let npYdataAFRODB = /*[[${npYafrodb}]]*/ 'default';
 
-    let npXac100 = /*[[${npXac100}]]*/ 'default';
-    let npYac100 = /*[[${npYac100}]]*/ 'default';
 
-    let npXac100200 = /*[[${npXac100200}]]*/ 'default';
-    let npYac100200 = /*[[${npYac100200}]]*/ 'default';
 
-    let npXac200300 = /*[[${npXac200300}]]*/ 'default';
-    let npYac200300 = /*[[${npYac200300}]]*/ 'default';
+    let npXacTranche1 = /*[[${npXacTranche1}]]*/ 'default';
+    let npYacTranche1 = /*[[${npYacTranche1}]]*/ 'default';
 
-    let npXac300 = /*[[${npXac300}]]*/ 'default';
-    let npYac300 = /*[[${npYac300}]]*/ 'default';
+    let npXacTranche2 = /*[[${npXacTranche2}]]*/ 'default';
+    let npYacTranche2 = /*[[${npYacTranche2}]]*/ 'default';
+
+    let npXacTranche3 = /*[[${npXacTranche3}]]*/ 'default';
+    let npYacTranche3 = /*[[${npYacTranche3}]]*/ 'default';
+
+    let npXacTranche4 = /*[[${npXacTranche4}]]*/ 'default';
+    let npYacTranche4 = /*[[${npYacTranche4}]]*/ 'default';
 
 
     let globalCounts = /*[[${globalCounts}]]*/ 'default';
@@ -431,8 +483,205 @@
     // ***************************************
 
 
-    // building object to trace for CHEBI
+    // building object to trace for UEFS
+    var traceUEFS = {
+        x: npXdataUEFS,
+        y: npYdataUEFS ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'UEFS ('+globalCounts.countUEFS+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
 
+
+    // building object to trace for HIT
+    var traceHIT = {
+        x: npXdataHIT,
+        y: npYdataHIT ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'HIT ('+globalCounts.countHIT+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for SANCDB
+    var traceSANCDB = {
+        x: npXdataSANCDB,
+        y: npYdataSANCDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'SANCDB ('+globalCounts.countSANCDB+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for AFRODB
+    var traceAFRODB = {
+        x: npXdataAFRODB,
+        y: npYdataAFRODB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'AfroDB ('+globalCounts.countAFRODB+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for NPACT
+    var traceNPACT = {
+        x: npXdataNPACT,
+        y: npYdataNPACT ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NPACT ('+globalCounts.countNPACT+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for SELLECKCHEM
+    var traceSELLECKCHEM = {
+        x: npXdataSELLECKCHEM,
+        y: npYdataSELLECKCHEM ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'Selleck Chem NP ('+globalCounts.countSELLECKCHEM+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for CHEMBL
+    var traceCHEMBL = {
+        x: npXdataCHEMBL,
+        y: npYdataCHEMBL ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'ChEMBL Natural Products ('+globalCounts.countCHEMBL+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for NUBBE
+    var traceNUBBE = {
+        x: npXdataNUBBE,
+        y: npYdataNUBBE ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NuBBE ('+globalCounts.countNUBBE+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for STREPTOMEDB
+    var traceSTREPTOMEDB = {
+        x: npXdataSTREPTOMEDB,
+        y: npYdataSTREPTOMEDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'StreptomeDB ('+globalCounts.countSTREPTOMEDB+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for PUBCHEM
+    var tracePUBCHEM = {
+        x: npXdataPUBCHEM,
+        y: npYdataPUBCHEM ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'PubChem Natural Products ('+globalCounts.countPUBCHEM+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for NANPDB
+    var traceNANPDB = {
+        x: npXdataNANPDB,
+        y: npYdataNANPDB ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NANPDB ('+globalCounts.countNANPDB+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for CHEBI
     var traceCHEBI = {
         x: npXdataCHEBI,
         y: npYdataCHEBI ,
@@ -450,8 +699,25 @@
     };
 
 
-    // building object to trace for TCMDB
+    // building object to trace for NPATLAS
+    var traceNPATLAS = {
+        x: npXdataNPATLAS,
+        y: npYdataNPATLAS ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'NP Atlas ('+globalCounts.countNPATLAS+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
 
+
+    // building object to trace for TCMDB
     var traceTCMDB = {
         x: npXdataTCMDB,
         y: npYdataTCMDB ,
@@ -470,13 +736,12 @@
 
 
     // building object to trace for ZINC NP
-
-    var traceZINCNP = {
-        x: npXdataZINCNP,
-        y: npYdataZINCNP ,
+    var traceIBS = {
+        x: npXdataIBS,
+        y: npYdataIBS ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'ZINC Natural Products ('+globalCounts.countZINCNP+')',
+        name: 'InterBioScreen NP ('+globalCounts.countIBS+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -487,134 +752,8 @@
         hoverinfo:'x',
     };
 
-    // building object to trace for PUBCHEM
-
-    var tracePUBCHEM = {
-        x: npXdataPUBCHEM,
-        y: npYdataPUBCHEM ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'PubChem Natural Products ('+globalCounts.countPUBCHEM+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for CHEMBL
-
-    var traceCHEMBL = {
-        x: npXdataCHEMBL,
-        y: npYdataCHEMBL ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'ChEMBL Natural Products ('+globalCounts.countCHEMBL+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for ZINC NP
-
-    var traceNPATLAS = {
-        x: npXdataNPATLAS,
-        y: npYdataNPATLAS ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'NP Atlas ('+globalCounts.countNPATLAS+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for NUBBE
-
-    var traceNUBBE = {
-        x: npXdataNUBBE,
-        y: npYdataNUBBE ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'NuBBE ('+globalCounts.countNUBBE+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for SANCDB
-
-    var traceSANCDB = {
-        x: npXdataSANCDB,
-        y: npYdataSANCDB ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'SANCDB ('+globalCounts.countSANCDB+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for SUPERNATURAL
-
-    var traceSUPERNATURAL = {
-        x: npXdataSUPERNATURAL,
-        y: npYdataSUPERNATURAL ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'Supernatural II ('+globalCounts.countSUPERNATURAL+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
-
-    // building object to trace for AFRODB
-
-    var traceAFRODB = {
-        x: npXdataAFRODB,
-        y: npYdataAFRODB ,
-        //legendgroup: 'bydatabase',
-        mode: 'lines',
-        name: 'AfroDB ('+globalCounts.countAFRODB+')',
-        visible: 'legendonly',
-        line: {
-            shape: 'spline',
-            // color: 'rgb(76, 0, 153)',
-            width: 2
-        },
-        type: 'scatter',
-        hoverinfo:'x',
-    };
 
     // building object to trace for OLD2012
-
     var traceOLD2012 = {
         x: npXdataOLD2012,
         y: npYdataOLD2012 ,
@@ -631,8 +770,65 @@
         hoverinfo:'x',
     };
 
-    // building object to trace for HMDB
 
+    // building object to trace for ZINC NP
+    var traceZINCNP = {
+        x: npXdataZINCNP,
+        y: npYdataZINCNP ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'ZINC Natural Products ('+globalCounts.countZINCNP+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for UNPD
+    var traceUNPD = {
+        x: npXdataUNPD,
+        y: npYdataUNPD ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'UNPD ('+globalCounts.countUNPD+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+    // building object to trace for SUPERNATURAL
+    var traceSUPERNATURAL = {
+        x: npXdataSUPERNATURAL,
+        y: npYdataSUPERNATURAL ,
+        //legendgroup: 'bydatabase',
+        mode: 'lines',
+        name: 'Supernatural II ('+globalCounts.countSUPERNATURAL+')',
+        visible: 'legendonly',
+        line: {
+            shape: 'spline',
+            // color: 'rgb(76, 0, 153)',
+            width: 2
+        },
+        type: 'scatter',
+        hoverinfo:'x',
+    };
+
+
+
+
+
+    // building object to trace for HMDB
     var traceHMDB = {
         x: npXdataHMDB,
         y: npYdataHMDB ,
@@ -651,7 +847,6 @@
 
 
     // building object to trace for DRUGBANK
-
     var traceDRUGBANK = {
         x: npXdataDRUGBANK,
         y: npYdataDRUGBANK ,
@@ -670,13 +865,12 @@
 
 
     // building object to trace for BY SIZE
-
-    var traceAC100 = {
-        x: npXac100,
-        y: npYac100 ,
+    var traceACTranche1 = {
+        x: npXacTranche1,
+        y: npYacTranche1 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size < 100 atoms (SM & NP)',
+        name: 'molecule size < 30 atoms (SM & NP - '+globalCounts.countTranche1+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -687,12 +881,12 @@
         hoverinfo:'x',
     };
 
-    var traceAC100200 = {
-        x: npXac100200,
-        y: npYac100200 ,
+    var traceACTranche2 = {
+        x: npXacTranche2,
+        y: npYacTranche2 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 100 and 200 atoms (SM & NP)',
+        name: 'molecule size between 30 and 35 atoms (SM & NP - '+globalCounts.countTranche2+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -704,12 +898,12 @@
     };
 
 
-    var traceAC200300 = {
-        x: npXac200300,
-        y: npYac200300 ,
+    var traceACTranche3= {
+        x: npXacTranche3,
+        y: npYacTranche3 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 200 and 300 atoms (SM & NP)',
+        name: 'molecule size between 35 and 40 atoms (SM & NP - '+globalCounts.countTranche3+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -720,12 +914,12 @@
         hoverinfo:'x',
     };
 
-    var traceAC300 = {
-        x: npXac300,
-        y: npYac300 ,
+    var traceACTranche4 = {
+        x: npXacTranche4,
+        y: npYacTranche4 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size >=300 atoms (SM & NP)',
+        name: 'molecule size >=40 atoms (SM & NP - '+globalCounts.countTranche4+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -744,9 +938,17 @@
     // ***************************************
     // Prepare and plot
 
-    let data = [traceNP, traceSM, traceOLD2012, traceSUPERNATURAL, traceCHEBI, traceTCMDB, traceZINCNP, tracePUBCHEM,
-        traceCHEMBL, traceNPATLAS, traceNUBBE, traceSANCDB, traceAFRODB, traceDRUGBANK, traceBACTERIA,
-        traceFUNGI, tracePLANTS, traceAC100, traceAC100200, traceAC200300, traceAC300];
+    let data = [traceNP, traceSM,
+
+        traceUEFS, traceHIT, traceSANCDB, traceAFRODB, traceNPACT, traceSELLECKCHEM, traceCHEMBL, traceNUBBE, traceSTREPTOMEDB, tracePUBCHEM,
+        traceNANPDB, traceCHEBI, traceNPATLAS, traceTCMDB, traceIBS, traceOLD2012, traceZINCNP, traceUNPD, traceSUPERNATURAL,
+
+        traceDRUGBANK,
+
+        traceBACTERIA,
+        traceFUNGI, tracePLANTS,
+
+        traceACTranche1, traceACTranche2, traceACTranche3, traceACTranche4];
 
     let layout = {
 

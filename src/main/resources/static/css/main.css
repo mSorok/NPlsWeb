@@ -70,9 +70,13 @@ table td {
 
 
 
+
 #headercheminf{
     height:40%;
     width:100%;
+    min-width: 1200px;
+    min-height: 200px;
+    float:left;
 }
 
 #container
@@ -80,7 +84,11 @@ table td {
 
     margin-left: 5%;
     margin-right: 5%;
-    height: 700px;
+    margin-bottom: 5%;
+    height: 750px;
+    padding-bottom: 2%;
+
+    min-width: 1200px;
 }
 
 
@@ -99,6 +107,13 @@ table td {
     float:left;
     width: 5%;
     height: 100%;
+}
+
+#fill4{
+    float:left;
+    width:100%;
+    height:5%;
+    min-height: 5px;
 }
 
 #oclContainer
@@ -131,10 +146,19 @@ table td {
 
 }
 
+#resubmit{
+    margin-top: 10px;
+
+    float:left;
+}
+
+
+
+
 #resultsTable {
     /*<!--border: 1px solid black;-->*/
     width:100%;
-    float: left;;
+    float: left;
     /*
     vertical-align: center;
     */
@@ -161,7 +185,8 @@ table td {
     vertical-align: center;
     text-align:center;
     height: 750px;
-    width: 100%
+    min-width: 1000px;
+    width: 100%;
 
 }
 

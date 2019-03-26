@@ -1,5 +1,6 @@
 package de.unijena.cheminf.nplsweb.nplsweb.misc;
 
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.aromaticity.Kekulization;
@@ -13,6 +14,7 @@ import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MoleculeChecker {
@@ -84,11 +87,28 @@ public class MoleculeChecker {
             }
 
 
-            ElectronDonation model = ElectronDonation.cdk();
-            CycleFinder cycles = Cycles.cdkAromaticSet();
-            Aromaticity aromaticity = new Aromaticity(model, cycles);
+            //ElectronDonation model = ElectronDonation.cdk();
+            //CycleFinder cycles = Cycles.cdkAromaticSet();
+            //Aromaticity aromaticity = new Aromaticity(model, cycles);
 
 
+
+            //Remove aromaticity
+
+
+            String smi;
+            SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Unique);
+            SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+            Map<Object, Object> properties = molecule.getProperties();
+            String id = molecule.getID();
+            try {
+                smi = sg.create(molecule);
+                molecule = sp.parseSmiles(smi);
+                molecule.setProperties(properties);
+                molecule.setID(id);
+            } catch (CDKException e) {
+                e.printStackTrace();
+            }
 
 
 
@@ -127,6 +147,7 @@ public class MoleculeChecker {
             AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule);
 
 
+            /*
             //Adding aromaticity to molecules when needed
             try {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
@@ -135,6 +156,10 @@ public class MoleculeChecker {
             } catch (CDKException e) {
                 e.printStackTrace();
             }
+
+            */
+
+
 
 
             //Fixing molecular bonds
@@ -146,6 +171,7 @@ public class MoleculeChecker {
             } catch (IllegalArgumentException e) {
                 //System.out.println("Could not kekulize molecule "+ this.molecule.getID());
             }
+
 
 
 

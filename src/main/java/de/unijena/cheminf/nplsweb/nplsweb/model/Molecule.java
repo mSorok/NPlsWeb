@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="molecule", indexes = {  @Index(name = "IDX1", columnList = "inchikey", unique = true) , @Index(name = "IDX2", columnList = "is_a_NP")  } )
+@Table(name="molecule", indexes = {  @Index(name = "IDX1", columnList = "inchikey", unique = true) , @Index(name = "IDX2", columnList = "is_a_NP"), @Index(name = "IDX3", columnList = "mol_id"), @Index(name = "IDX4", columnList = "npl_score")  } )
 public class Molecule implements IMolecule{
 
 
@@ -18,9 +18,8 @@ public class Molecule implements IMolecule{
 
     private Double npl_sugar_score;
 
-    private Double sml_score;
+    private Double npl_noh_score;
 
-    private Double sml_sugar_score;
 
     @Column(length = 1200)
     private String inchi;
@@ -31,9 +30,13 @@ public class Molecule implements IMolecule{
     @Column(length = 1200)
     private String smiles;
 
-    private Integer atom_number;
+    private Integer heavy_atom_number;
 
-    private Integer sugar_free_atom_number;
+    private Integer total_atom_number;
+
+    private Integer sugar_free_total_atom_number;
+
+    private Integer sugar_free_heavy_atom_number;
 
     private Integer containsSugar;
 
@@ -92,21 +95,7 @@ public class Molecule implements IMolecule{
         this.npl_sugar_score = npl_sugar_score;
     }
 
-    public Double getSml_score() {
-        return sml_score;
-    }
 
-    public void setSml_score(Double sml_score) {
-        this.sml_score = sml_score;
-    }
-
-    public Double getSml_sugar_score() {
-        return sml_sugar_score;
-    }
-
-    public void setSml_sugar_score(Double sml_sugar_score) {
-        this.sml_sugar_score = sml_sugar_score;
-    }
 
     public String getInchi() {
         return this.inchi;
@@ -140,24 +129,43 @@ public class Molecule implements IMolecule{
         this.containsSugar = containsSugar;
     }
 
-    public Integer getAtom_number() {
-        return atom_number;
-    }
 
-    public void setAtom_number(Integer atom_number) {
-        this.atom_number = atom_number;
-    }
 
     public Integer getContainsSugar() {
         return containsSugar;
     }
 
-    public Integer getSugar_free_atom_number() {
-        return sugar_free_atom_number;
+
+    public Integer getHeavy_atom_number() {
+        return heavy_atom_number;
     }
 
-    public void setSugar_free_atom_number(Integer sugar_free_atom_number) {
-        this.sugar_free_atom_number = sugar_free_atom_number;
+    public void setHeavy_atom_number(Integer heavy_atom_number) {
+        this.heavy_atom_number = heavy_atom_number;
+    }
+
+    public Integer getTotal_atom_number() {
+        return total_atom_number;
+    }
+
+    public void setTotal_atom_number(Integer total_atom_number) {
+        this.total_atom_number = total_atom_number;
+    }
+
+    public Integer getSugar_free_total_atom_number() {
+        return sugar_free_total_atom_number;
+    }
+
+    public void setSugar_free_total_atom_number(Integer sugar_free_total_atom_number) {
+        this.sugar_free_total_atom_number = sugar_free_total_atom_number;
+    }
+
+    public Integer getSugar_free_heavy_atom_number() {
+        return sugar_free_heavy_atom_number;
+    }
+
+    public void setSugar_free_heavy_atom_number(Integer sugar_free_heavy_atom_number) {
+        this.sugar_free_heavy_atom_number = sugar_free_heavy_atom_number;
     }
 
     public Integer getMol_id() {
@@ -231,5 +239,14 @@ public class Molecule implements IMolecule{
 
     public void setMolecularWeight(Double molecularWeight) {
         this.molecularWeight = molecularWeight;
+    }
+
+
+    public Double getNpl_noh_score() {
+        return npl_noh_score;
+    }
+
+    public void setNpl_noh_score(Double npl_noh_score) {
+        this.npl_noh_score = npl_noh_score;
     }
 }

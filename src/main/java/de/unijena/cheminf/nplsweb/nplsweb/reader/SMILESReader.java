@@ -50,17 +50,35 @@ public class SMILESReader implements IReader {
                 String smiles_names = line;
                 if(!line.contains("smiles")) {
                     try {
-                        String[] splitted = smiles_names.split("\\s+"); //splitting the canonical smiles format: SMILES \s mol name
+
+                        String smiles;
+                        String id;
+
+                        if (line.contains("\\s")) {
+                            String[] splitted = smiles_names.split("\\s+"); //splitting the canonical smiles format: SMILES \s mol name
+                            smiles =splitted[0];
+                            id = splitted[1];
+                        }
+                        else{
+                            smiles = line;
+                            smiles = smiles.replace("\n", "");
+                            id="nb"+count;
+
+
+                        }
+
+
+
                         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 
                         IAtomContainer molecule = null;
                         try {
-                            molecule = sp.parseSmiles(splitted[0]);
+                            molecule = sp.parseSmiles(smiles);
 
 
                             molecule.setProperty("MOL_NUMBER_IN_FILE", file.getName()+" " + Integer.toString(count));
-                            molecule.setProperty("ID", splitted[1]);
-                            molecule.setID(splitted[1]);
+                            molecule.setProperty("ID", id);
+                            molecule.setID(id);
 
                             molecule.setProperty("FILE_ORIGIN", file.getName().replace(".smi", ""));
 
@@ -73,7 +91,7 @@ public class SMILESReader implements IReader {
 
                             // **************************
                             // ID workaround
-                            String id = "";
+
                             if (molecule.getID() == "" || molecule.getID() == null) {
                                 for (Object p : molecule.getProperties().keySet()) {
                                     if (p.toString().toLowerCase().contains("id")) {

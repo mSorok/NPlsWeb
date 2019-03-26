@@ -38,39 +38,70 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule WHERE is_a_np=0  AND npl_score !=0")
     List<Object[]> getNPLSinSM();
 
+
+
+
+
     // BY DATABASE
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='CHEBI'")
-    List<Object[]> getNPLSinCHEBI();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='TCMDB'")
-    List<Object[]> getNPLSinTCMDB();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='UEFS'")
+    List<Object[]> getNPLSinUEFS();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='ZINC' AND status='NP'")
-    List<Object[]> getNPLSinZINCNP();
-
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='PUBCHEM'")
-    List<Object[]> getNPLSinPUBCHEM();
-
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='CHEMBL'")
-    List<Object[]> getNPLSinCHEMBL();
-
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS'")
-    List<Object[]> getNPLSinNPATLAS();
-
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NUBBE'")
-    List<Object[]> getNPLSinNUBBE();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='HIT'")
+    List<Object[]> getNPLSinHIT();
 
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='SANCDB'")
     List<Object[]> getNPLSinSANCDB();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='SUPERNATURAL'")
-    List<Object[]> getNPLSinSUPERNATURAL();
-
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='AFRODB'")
     List<Object[]> getNPLSinAFRODB();
 
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPACT'")
+    List<Object[]> getNPLSinNPACT();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='SELLECKCHEM'")
+    List<Object[]> getNPLSinSELLECKCHEM();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='CHEMBL'")
+    List<Object[]> getNPLSinCHEMBL();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NUBBE'")
+    List<Object[]> getNPLSinNUBBE();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='STREPTOMEDB'")
+    List<Object[]> getNPLSinSTREPTOMEDB();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='PUBCHEM'")
+    List<Object[]> getNPLSinPUBCHEM();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NANPDB'")
+    List<Object[]> getNPLSinNANPDB();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='CHEBI'")
+    List<Object[]> getNPLSinCHEBI();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS'")
+    List<Object[]> getNPLSinNPATLAS();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='TCMDB'")
+    List<Object[]> getNPLSinTCMDB();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='IBS'")
+    List<Object[]> getNPLSinIBS();
+
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='OLD2012'")
     List<Object[]> getNPLSinOLD2012();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='ZINC' AND status='NP'")
+    List<Object[]> getNPLSinZINCNP();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='UNPD'")
+    List<Object[]> getNPLSinUNPD();
+
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='SUPERNATURAL'")
+    List<Object[]> getNPLSinSUPERNATURAL();
+
+
 
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE npl_score !=0 AND source='HMDB'")
     List<Object[]> getNPLSinHMDB();
@@ -79,31 +110,34 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     List<Object[]> getNPLSinDRUGBANK();
 
 
+
+
+
     //BY KINGDOM
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%'")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND ((source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%')  OR source='STREPTOMEDB' )"  )
     List<Object[]> getNPLSinBACTERIA();
 
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'f%'")
     List<Object[]> getNPLSinFUNGI();
 
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB')")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB' OR source='SANCDB' OR source='HIT' OR source='NPACT')")
     List<Object[]> getNPLSinPLANTS();
 
     //BY SIZE
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<100")
-    List<Object[]> getNPLSac100();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule WHERE npl_score !=0 AND molecule.atom_number<30")
+    List<Object[]> getNPLSacTranche1();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<200 AND molecule.atom_number>=100")
-    List<Object[]> getNPLSac100_200();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number<35 AND molecule.atom_number>=30")
+    List<Object[]> getNPLSacTranche2();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number<300 AND molecule.atom_number>=200")
-    List<Object[]> getNPLSac200_300();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number<40 AND molecule.atom_number>=35")
+    List<Object[]> getNPLSacTranche3();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule INNER JOIN ori_molecule ON(unique_mol_id=mol_id) WHERE npl_score !=0 AND molecule.atom_number>=300")
-    List<Object[]> getNPLSac300();
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number>=40")
+    List<Object[]> getNPLSacTranche4();
 
 
 
@@ -128,33 +162,6 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
 
 
-    /* not useful - SM scores*/
-    @Query(nativeQuery = true, value = "SELECT sml_score FROM molecule WHERE is_a_np=1")
-    List<Object[]> getSMLSinNP();
-
-    @Query(nativeQuery = true, value = "SELECT sml_score FROM molecule WHERE is_a_np=0")
-    List<Object[]> getSMLSinSM();
-
-    @Query(nativeQuery = true, value = "SELECT sml_sugar_score FROM molecule WHERE is_a_np=1")
-    List<Object[]> getSMLSsugarSinNP();
-
-    @Query(nativeQuery = true, value = "SELECT sml_sugar_score FROM molecule WHERE is_a_np=0")
-    List<Object[]> getSMLSsugarSinSM();
-
-
-    @Query(nativeQuery = true, value = "SELECT MIN(sml_score) FROM molecule")
-    List<Object[]> getMinSMLScore();
-
-    @Query(nativeQuery = true, value = "SELECT MAX(sml_score) FROM molecule")
-    List<Object[]> getMaxSMLScore();
-
-    @Query(nativeQuery = true, value = "SELECT MIN(sml_sugar_score) FROM molecule")
-    List<Object[]> getMinSMLSugarScore();
-
-    @Query(nativeQuery = true, value = "SELECT MAX(sml_sugar_score) FROM molecule")
-    List<Object[]> getMaxSMLSugarScore();
-
-
 
 
 
@@ -174,7 +181,7 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
 
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1 AND npl_score !=0 AND source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%'")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1 AND npl_score !=0 AND ((source='NPATLAS' AND ori_molecule.ori_mol_id LIKE 'b%') OR source='STREPTOMEDB' ) ")
     Integer countAllNPInBacteria();
 
 
@@ -182,12 +189,24 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     Integer countAllNPInFungi();
 
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB' ) ")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE is_a_np=1  AND npl_score !=0 AND (source='TCMDB' OR (source='NUBBE' AND ori_molecule.ori_mol_id LIKE 'p%') OR source='AFRODB' OR source='SANCDB' OR source='HIT' OR source='NPACT') ")
     Integer countAllNPInPlants();
 
     @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule INNER JOIN ori_molecule ON(mol_id = unique_mol_id) WHERE source='DRUGBANK' ")
     Integer countAllDrugbank();
 
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<30")
+    Integer countAllTranche1();
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<35 AND molecule.atom_number>=30")
+    Integer countAllTranche2();
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<40 AND molecule.atom_number>=35")
+    Integer countAllTranche3();
+
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number>=40")
+    Integer countAllTranche4();
 
 
 

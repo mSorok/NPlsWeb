@@ -1,6 +1,7 @@
 package de.unijena.cheminf.nplsweb.nplsweb.controllers;
 
 import de.unijena.cheminf.nplsweb.nplsweb.misc.PlotData;
+import de.unijena.cheminf.nplsweb.nplsweb.misc.SessionCleaner;
 import de.unijena.cheminf.nplsweb.nplsweb.model.MoleculeRepository;
 import de.unijena.cheminf.nplsweb.nplsweb.reader.ReaderService;
 import de.unijena.cheminf.nplsweb.nplsweb.reader.UserInputMoleculeReaderService;
@@ -51,6 +52,9 @@ public class NPlsWebController {
     @Autowired
     UserInputMoleculeReaderService userInputMoleculeReaderService;
 
+    @Autowired
+    SessionCleaner sessionCleaner;
+
 
     private boolean newPlot = false;
     private PlotData plotData = new PlotData();
@@ -62,53 +66,85 @@ public class NPlsWebController {
 
 
 
+    //*******************************************
+    //******** CLEANING THE SESSION
+    @GetMapping(value="/clear")
+    public String clearSession(RedirectAttributes redirectAttributes){
+
+
+        // sending all user molecules with all scores
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate localDate = LocalDate.now();
+        String userDate = dtf.format(localDate);
+
+        String thisSessionId =  RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
+
+
+        //deleting entries with current sessionId from the database
+        sessionCleaner.clearSession(thisSessionId);
+
+        return("redirect:/");
+    }
+
     //  ******************************************
     // ******* READING MOLECULE FROM STRING upload
     @PostMapping(value="/smiles", consumes = {MediaType.TEXT_PLAIN_VALUE} )
     public String readMoleculeFromSMILES(@RequestBody String smiles, RedirectAttributes redirectAttributes){
 
+        try {
+
+            smiles = smiles.replace("\n", "").replace("\r", "");
 
 
-        smiles = smiles.split("smiles=")[1];
-        //System.out.println(smiles);
+            smiles = smiles.split("smiles=")[1];
 
 
 
-        boolean acceptMolecule = userInputMoleculeReaderService.verifySMILES(smiles);
+            boolean acceptMolecule = userInputMoleculeReaderService.verifySMILES(smiles);
 
-        //System.out.println("molecule accepted "+acceptMolecule);
+            //System.out.println("molecule accepted "+acceptMolecule);
 
-        //need to include a validation step from the reader service
-        if(acceptMolecule) {
-            System.out.println("here smiles : "+smiles);
+            //need to include a validation step from the reader service
+            if (acceptMolecule) {
+                System.out.println("here smiles : " + smiles);
 
-            String smifile = userInputMoleculeReaderService.transformToSMI(smiles);
+                String smifile = userInputMoleculeReaderService.transformToSMI(smiles);
 
-            readerService.startService(smifile);
-            readerService.doWorkWithFile();
-            npScorerService.setMolecules(readerService.getMolecules());
+                readerService.startService(smifile);
+                readerService.doWorkWithFile();
+                npScorerService.setMolecules(readerService.getMolecules());
 
 
-            String ipAddress = request.getHeader("X-FORWARDED-FOR");
-            if (ipAddress == null) {
-                ipAddress = request.getRemoteAddr();
+                String ipAddress = request.getHeader("X-FORWARDED-FOR");
+                if (ipAddress == null) {
+                    ipAddress = request.getRemoteAddr();
+                }
+
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                LocalDate localDate = LocalDate.now();
+                String userDate = dtf.format(localDate);
+
+                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent") + "--" + ipAddress + "--" + userDate;
+                npScorerService.setSesstionId(sessionId);
+                npScorerService.doWork();
+                redirectAttributes.addFlashAttribute("numberOfProcessedMolecules", "1");
+
+                return "redirect:/results";
+            } else {
+
+                redirectAttributes.addFlashAttribute("notSmiles", "");
+                return "redirect:/";
             }
-
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            LocalDate localDate = LocalDate.now();
-            String userDate = dtf.format(localDate);
-
-            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
-            npScorerService.setSesstionId(sessionId);
-            npScorerService.doWork();
-            redirectAttributes.addFlashAttribute("numberOfProcessedMolecules", "1");
-
-            return "redirect:/results";
-        }
-        else{
+        }catch (ArrayIndexOutOfBoundsException exception){
 
             redirectAttributes.addFlashAttribute("notSmiles", "");
             return "redirect:/";
+
         }
     }
 
@@ -299,74 +335,92 @@ public class NPlsWebController {
 
 
 
-            model.addAttribute( "npXchebi" ,  this.plotData.npXchebi );
-            model.addAttribute( "npYchebi" ,  this.plotData.npYchebi );
 
 
 
-            model.addAttribute( "npXtcmdb" ,  this.plotData.npXtcmdb );
-            model.addAttribute( "npYtcmdb" ,  this.plotData.npYtcmdb );
+            model.addAttribute( "npXuefs" ,  this.plotData.npXuefs );
+            model.addAttribute( "npYuefs" ,  this.plotData.npYuefs );
 
-
-
-            model.addAttribute( "npXzincnp" ,  this.plotData.npXzincnp );
-            model.addAttribute( "npYzincnp" ,  this.plotData.npYzincnp );
-
-
-            model.addAttribute( "npXpubchem" ,  this.plotData.npXpubchem );
-            model.addAttribute( "npYpubchem" ,  this.plotData.npYpubchem );
-
-
-
-            model.addAttribute( "npXchembl" ,  this.plotData.npXchembl );
-            model.addAttribute( "npYchembl" ,  this.plotData.npYchembl );
-
-
-            model.addAttribute( "npXnpatlas" ,  this.plotData.npXnpatlas );
-            model.addAttribute( "npYnpatlas" ,  this.plotData.npYnpatlas );
-
-
-
-            model.addAttribute( "npXnubbe" ,  this.plotData.npXnubbe );
-            model.addAttribute( "npYnubbe" ,  this.plotData.npYnubbe );
-
+            model.addAttribute( "npXhit" ,  this.plotData.npXhit );
+            model.addAttribute( "npYhit" ,  this.plotData.npYhit );
 
             model.addAttribute( "npXsancdb" ,  this.plotData.npXsancdb );
             model.addAttribute( "npYsancdb" ,  this.plotData.npYsancdb );
 
+            model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
+            model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
+
+            model.addAttribute( "npXnpact" ,  this.plotData.npXnpact );
+            model.addAttribute( "npYnpact" ,  this.plotData.npYnpact );
+
+            model.addAttribute( "npXselleckchem" ,  this.plotData.npXsellecchem );
+            model.addAttribute( "npYselleckchem" ,  this.plotData.npYsellecchem );
+
+            model.addAttribute( "npXchembl" ,  this.plotData.npXchembl );
+            model.addAttribute( "npYchembl" ,  this.plotData.npYchembl );
+
+            model.addAttribute( "npXnubbe" ,  this.plotData.npXnubbe );
+            model.addAttribute( "npYnubbe" ,  this.plotData.npYnubbe );
+
+            model.addAttribute( "npXstreptomedb" ,  this.plotData.npXstreptomedb );
+            model.addAttribute( "npYstreptomedb" ,  this.plotData.npYstreptomedb );
+
+            model.addAttribute( "npXpubchem" ,  this.plotData.npXpubchem );
+            model.addAttribute( "npYpubchem" ,  this.plotData.npYpubchem );
+
+            model.addAttribute( "npXnanpdb" ,  this.plotData.npXnanpdb );
+            model.addAttribute( "npYnanpdb" ,  this.plotData.npYnanpdb );
+
+            model.addAttribute( "npXchebi" ,  this.plotData.npXchebi );
+            model.addAttribute( "npYchebi" ,  this.plotData.npYchebi );
+
+            model.addAttribute( "npXnpatlas" ,  this.plotData.npXnpatlas );
+            model.addAttribute( "npYnpatlas" ,  this.plotData.npYnpatlas );
+
+            model.addAttribute( "npXtcmdb" ,  this.plotData.npXtcmdb );
+            model.addAttribute( "npYtcmdb" ,  this.plotData.npYtcmdb );
+
+            model.addAttribute( "npXibs" ,  this.plotData.npXibs );
+            model.addAttribute( "npYibs" ,  this.plotData.npYibs );
+
+            model.addAttribute( "npXold2012" ,  this.plotData.npXold2012 );
+            model.addAttribute( "npYold2012" ,  this.plotData.npYold2012 );
+
+            model.addAttribute( "npXzincnp" ,  this.plotData.npXzincnp );
+            model.addAttribute( "npYzincnp" ,  this.plotData.npYzincnp );
+
+            model.addAttribute( "npXunpd" ,  this.plotData.npXunpd );
+            model.addAttribute( "npYunpd" ,  this.plotData.npYunpd );
+
+            model.addAttribute( "npXsupernatural" ,  this.plotData.npXsupernatural );
+            model.addAttribute( "npYsupernatural" ,  this.plotData.npYsupernatural );
+
+
+
+
+
 
             model.addAttribute( "npXdrugbank" ,  this.plotData.npXdrugbank );
             model.addAttribute( "npYdrugbank" ,  this.plotData.npYdrugbank );
-
-
 
             model.addAttribute( "npXhmdb" ,  this.plotData.npXhmdb );
             model.addAttribute( "npYhmdb" ,  this.plotData.npYhmdb );
 
 
 
-            model.addAttribute( "npXold2012" ,  this.plotData.npXold2012 );
-            model.addAttribute( "npYold2012" ,  this.plotData.npYold2012 );
 
 
-            model.addAttribute( "npXsupernatural" ,  this.plotData.npXsupernatural );
-            model.addAttribute( "npYsupernatural" ,  this.plotData.npYsupernatural );
+            model.addAttribute("npXacTranche1", this.plotData.npXacTranche1);
+            model.addAttribute("npYacTranche1", this.plotData.npYacTranche1);
 
+            model.addAttribute("npXacTranche2", this.plotData.npXacTranche2);
+            model.addAttribute("npYacTranche2", this.plotData.npYacTranche2);
 
-            model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
-            model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
+            model.addAttribute("npXacTranche3", this.plotData.npXacTranche3);
+            model.addAttribute("npYacTranche3", this.plotData.npYacTranche3);
 
-            model.addAttribute("npXac100", this.plotData.npXac100);
-            model.addAttribute("npYac100", this.plotData.npYac100);
-
-            model.addAttribute("npXac100200", this.plotData.npXac100200);
-            model.addAttribute("npYac100200", this.plotData.npYac100200);
-
-            model.addAttribute("npXac200300", this.plotData.npXac200300);
-            model.addAttribute("npYac200300", this.plotData.npYac200300);
-
-            model.addAttribute("npXac300", this.plotData.npXac300);
-            model.addAttribute("npYac300", this.plotData.npYac300);
+            model.addAttribute("npXacTranche4", this.plotData.npXacTranche4);
+            model.addAttribute("npYacTranche4", this.plotData.npYacTranche4);
 
 
             model.addAttribute("globalCounts", this.plotData.globalCounts);
@@ -394,7 +448,6 @@ public class NPlsWebController {
      * @return
      * @throws IOException
      *
-     * from the index / page, is there are files that have been submitted, lists them, without launching the NPLS computation
      */
     @GetMapping("/")
     public String indexPageMethod(Model model) throws IOException {
@@ -439,74 +492,90 @@ public class NPlsWebController {
 
 
 
-        model.addAttribute( "npXchebi" ,  this.plotData.npXchebi );
-        model.addAttribute( "npYchebi" ,  this.plotData.npYchebi );
+        model.addAttribute( "npXuefs" ,  this.plotData.npXuefs );
+        model.addAttribute( "npYuefs" ,  this.plotData.npYuefs );
 
-
-
-        model.addAttribute( "npXtcmdb" ,  this.plotData.npXtcmdb );
-        model.addAttribute( "npYtcmdb" ,  this.plotData.npYtcmdb );
-
-
-
-        model.addAttribute( "npXzincnp" ,  this.plotData.npXzincnp );
-        model.addAttribute( "npYzincnp" ,  this.plotData.npYzincnp );
-
-
-        model.addAttribute( "npXpubchem" ,  this.plotData.npXpubchem );
-        model.addAttribute( "npYpubchem" ,  this.plotData.npYpubchem );
-
-
-
-        model.addAttribute( "npXchembl" ,  this.plotData.npXchembl );
-        model.addAttribute( "npYchembl" ,  this.plotData.npYchembl );
-
-
-        model.addAttribute( "npXnpatlas" ,  this.plotData.npXnpatlas );
-        model.addAttribute( "npYnpatlas" ,  this.plotData.npYnpatlas );
-
-
-
-        model.addAttribute( "npXnubbe" ,  this.plotData.npXnubbe );
-        model.addAttribute( "npYnubbe" ,  this.plotData.npYnubbe );
-
+        model.addAttribute( "npXhit" ,  this.plotData.npXhit );
+        model.addAttribute( "npYhit" ,  this.plotData.npYhit );
 
         model.addAttribute( "npXsancdb" ,  this.plotData.npXsancdb );
         model.addAttribute( "npYsancdb" ,  this.plotData.npYsancdb );
 
+        model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
+        model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
+
+        model.addAttribute( "npXnpact" ,  this.plotData.npXnpact );
+        model.addAttribute( "npYnpact" ,  this.plotData.npYnpact );
+
+        model.addAttribute( "npXselleckchem" ,  this.plotData.npXsellecchem );
+        model.addAttribute( "npYselleckchem" ,  this.plotData.npYsellecchem );
+
+        model.addAttribute( "npXchembl" ,  this.plotData.npXchembl );
+        model.addAttribute( "npYchembl" ,  this.plotData.npYchembl );
+
+        model.addAttribute( "npXnubbe" ,  this.plotData.npXnubbe );
+        model.addAttribute( "npYnubbe" ,  this.plotData.npYnubbe );
+
+        model.addAttribute( "npXstreptomedb" ,  this.plotData.npXstreptomedb );
+        model.addAttribute( "npYstreptomedb" ,  this.plotData.npYstreptomedb );
+
+        model.addAttribute( "npXpubchem" ,  this.plotData.npXpubchem );
+        model.addAttribute( "npYpubchem" ,  this.plotData.npYpubchem );
+
+        model.addAttribute( "npXnanpdb" ,  this.plotData.npXnanpdb );
+        model.addAttribute( "npYnanpdb" ,  this.plotData.npYnanpdb );
+
+        model.addAttribute( "npXchebi" ,  this.plotData.npXchebi );
+        model.addAttribute( "npYchebi" ,  this.plotData.npYchebi );
+
+        model.addAttribute( "npXnpatlas" ,  this.plotData.npXnpatlas );
+        model.addAttribute( "npYnpatlas" ,  this.plotData.npYnpatlas );
+
+        model.addAttribute( "npXtcmdb" ,  this.plotData.npXtcmdb );
+        model.addAttribute( "npYtcmdb" ,  this.plotData.npYtcmdb );
+
+        model.addAttribute( "npXibs" ,  this.plotData.npXibs );
+        model.addAttribute( "npYibs" ,  this.plotData.npYibs );
+
+        model.addAttribute( "npXold2012" ,  this.plotData.npXold2012 );
+        model.addAttribute( "npYold2012" ,  this.plotData.npYold2012 );
+
+        model.addAttribute( "npXzincnp" ,  this.plotData.npXzincnp );
+        model.addAttribute( "npYzincnp" ,  this.plotData.npYzincnp );
+
+        model.addAttribute( "npXunpd" ,  this.plotData.npXunpd );
+        model.addAttribute( "npYunpd" ,  this.plotData.npYunpd );
+
+        model.addAttribute( "npXsupernatural" ,  this.plotData.npXsupernatural );
+        model.addAttribute( "npYsupernatural" ,  this.plotData.npYsupernatural );
+
+
+
+
+
 
         model.addAttribute( "npXdrugbank" ,  this.plotData.npXdrugbank );
         model.addAttribute( "npYdrugbank" ,  this.plotData.npYdrugbank );
-
-
 
         model.addAttribute( "npXhmdb" ,  this.plotData.npXhmdb );
         model.addAttribute( "npYhmdb" ,  this.plotData.npYhmdb );
 
 
 
-        model.addAttribute( "npXold2012" ,  this.plotData.npXold2012 );
-        model.addAttribute( "npYold2012" ,  this.plotData.npYold2012 );
 
 
-        model.addAttribute( "npXsupernatural" ,  this.plotData.npXsupernatural );
-        model.addAttribute( "npYsupernatural" ,  this.plotData.npYsupernatural );
 
+        model.addAttribute("npXacTranche1", this.plotData.npXacTranche1);
+        model.addAttribute("npYacTranche1", this.plotData.npYacTranche1);
 
-        model.addAttribute( "npXafrodb" ,  this.plotData.npXafrodb );
-        model.addAttribute( "npYafrodb" ,  this.plotData.npYafrodb );
+        model.addAttribute("npXacTranche2", this.plotData.npXacTranche2);
+        model.addAttribute("npYacTranche2", this.plotData.npYacTranche2);
 
-        model.addAttribute("npXac100", this.plotData.npXac100);
-        model.addAttribute("npYac100", this.plotData.npYac100);
+        model.addAttribute("npXacTranche3", this.plotData.npXacTranche3);
+        model.addAttribute("npYacTranche3", this.plotData.npYacTranche3);
 
-        model.addAttribute("npXac100200", this.plotData.npXac100200);
-        model.addAttribute("npYac100200", this.plotData.npYac100200);
-
-        model.addAttribute("npXac200300", this.plotData.npXac200300);
-        model.addAttribute("npYac200300", this.plotData.npYac200300);
-
-        model.addAttribute("npXac300", this.plotData.npXac300);
-        model.addAttribute("npYac300", this.plotData.npYac300);
+        model.addAttribute("npXacTranche4", this.plotData.npXacTranche4);
+        model.addAttribute("npYacTranche4", this.plotData.npYacTranche4);
 
 
         model.addAttribute("globalCounts", this.plotData.globalCounts);
@@ -520,12 +589,6 @@ public class NPlsWebController {
 
         return "index";
     }
-
-
-
-
-
-
 
 
 
@@ -593,19 +656,30 @@ public class NPlsWebController {
             this.plotData.npScoresSM = npScorerService.returnAllNPLScoresSM();
 
             //Get subplots by DB
-            this.plotData.npScoresCHEBI = npScorerService.returnAllNPLScoresCHEBI();
-            this.plotData.npScoresTCMDB = npScorerService.returnAllNPLScoresTCMDB();
-            this.plotData.npScoresZINCNP = npScorerService.returnAllNPLScoresZINCNP();
-            this.plotData.npScoresPUBCHEM = npScorerService.returnAllNPLScoresPUBCHEM();
-            this.plotData.npScoresCHEMBL = npScorerService.returnAllNPLScoresCHEMBL();
-            this.plotData.npScoresNPATLAS = npScorerService.returnAllNPLScoresNPATLAS();
-            this.plotData.npScoresNUBBE = npScorerService.returnAllNPLScoresNUBBE();
+            this.plotData.npScoresUEFS = npScorerService.returnAllNPLScoresUEFS();
+            this.plotData.npScoresHIT = npScorerService.returnAllNPLScoresHIT();
             this.plotData.npScoresSANCDB = npScorerService.returnAllNPLScoresSANCDB();
+            this.plotData.npScoresAFRODB = npScorerService.returnAllNPLScoresAFRODB();
+            this.plotData.npScoresNPACT = npScorerService.returnAllNPLScoresNPACT();
+            this.plotData.npScoresSELLECCHEM = npScorerService.returnAllNPLScoresSELLECKCHEM();
+            this.plotData.npScoresCHEMBL = npScorerService.returnAllNPLScoresCHEMBL();
+            this.plotData.npScoresNUBBE = npScorerService.returnAllNPLScoresNUBBE();
+            this.plotData.npScoresSTREPTOMEDB = npScorerService.returnAllNPLScoresSTREPTOMEDB();
+            this.plotData.npScoresPUBCHEM = npScorerService.returnAllNPLScoresPUBCHEM();
+            this.plotData.npScoresNANPDB = npScorerService.returnAllNPLScoresNANPDB();
+            this.plotData.npScoresCHEBI = npScorerService.returnAllNPLScoresCHEBI();
+            this.plotData.npScoresNPATLAS = npScorerService.returnAllNPLScoresNPATLAS();
+            this.plotData.npScoresTCMDB = npScorerService.returnAllNPLScoresTCMDB();
+            this.plotData.npScoresIBS = npScorerService.returnAllNPLScoresIBS();
+            this.plotData.npScoresOLD2012 = npScorerService.returnAllNPLScoresOLD2012();
+            this.plotData.npScoresZINCNP = npScorerService.returnAllNPLScoresZINCNP();
+            this.plotData.npScoresUNPD = npScorerService.returnAllNPLScoresUNPD();
+            this.plotData.npScoresSUPERNATURAL = npScorerService.returnAllNPLScoresSUPENATURAL();
+
+
             this.plotData.npScoresDRUGBANK = npScorerService.returnAllNPLScoresDRUGBANK();
             this.plotData.npScoresHMDB = npScorerService.returnAllNPLScoresHMDB();
-            this.plotData.npScoresSUPERNATURAL = npScorerService.returnAllNPLScoresSUPENATURAL();
-            this.plotData.npScoresAFRODB = npScorerService.returnAllNPLScoresAFRODB();
-            this.plotData.npScoresOLD2012 = npScorerService.returnAllNPLScoresOLD2012();
+
 
 
             //Get subplots by organism
@@ -616,10 +690,10 @@ public class NPlsWebController {
 
 
             //Get subplots by size
-            this.plotData.npScoresAC100 = npScorerService.returnAllNPLScoresAC100();
-            this.plotData.npScoresAC100200 = npScorerService.returnAllNPLScoresAC100200();
-            this.plotData.npScoresAC200300 = npScorerService.returnAllNPLScoresAC200300();
-            this.plotData.npScoresAC300 = npScorerService.returnAllNPLScoresAC300();
+            this.plotData.npScoresACTranche1 = npScorerService.returnAllNPLScoresACTranche1();
+            this.plotData.npScoresACTranche2 = npScorerService.returnAllNPLScoresACTranche2();
+            this.plotData.npScoresACTranche3 = npScorerService.returnAllNPLScoresACTranche3();
+            this.plotData.npScoresACTranche4 = npScorerService.returnAllNPLScoresACTranche4();
 
 
 
@@ -628,21 +702,40 @@ public class NPlsWebController {
             this.plotData.globalCounts = new Hashtable<>();
             this.plotData.globalCounts.put("countAllNP", moleculeRepository.countAllNP());
             this.plotData.globalCounts.put("countAllSM", moleculeRepository.countAllSM());
-            this.plotData.globalCounts.put("countOld2102", moleculeRepository.countAllNPBySource("OLD2012"));
-            this.plotData.globalCounts.put("countSUPERNATURAL", moleculeRepository.countAllNPBySource("SUPERNATURAL"));
-            this.plotData.globalCounts.put("countCHEBI", moleculeRepository.countAllNPBySource("CHEBI"));
-            this.plotData.globalCounts.put("countTCMDB", moleculeRepository.countAllNPBySource("TCMDB"));
-            this.plotData.globalCounts.put("countZINCNP", moleculeRepository.countAllNPBySource("ZINC"));
-            this.plotData.globalCounts.put("countPUBCHEM", moleculeRepository.countAllNPBySource("PUBCHEM"));
-            this.plotData.globalCounts.put("countCHEMBL", moleculeRepository.countAllNPBySource("CHEMBL"));
-            this.plotData.globalCounts.put("countNPATLAS", moleculeRepository.countAllNPBySource("NPATLAS"));
-            this.plotData.globalCounts.put("countNUBBE", moleculeRepository.countAllNPBySource("NUBBE"));
+
+            this.plotData.globalCounts.put("countUEFS", moleculeRepository.countAllNPBySource("UEFS"));
+            this.plotData.globalCounts.put("countHIT", moleculeRepository.countAllNPBySource("HIT"));
             this.plotData.globalCounts.put("countSANCDB", moleculeRepository.countAllNPBySource("SANCDB"));
             this.plotData.globalCounts.put("countAFRODB", moleculeRepository.countAllNPBySource("AFRODB"));
+            this.plotData.globalCounts.put("countNPACT", moleculeRepository.countAllNPBySource("NPACT"));
+            this.plotData.globalCounts.put("countSELLECKCHEM", moleculeRepository.countAllNPBySource("SELLECKCHEM"));
+            this.plotData.globalCounts.put("countCHEMBL", moleculeRepository.countAllNPBySource("CHEMBL"));
+            this.plotData.globalCounts.put("countNUBBE", moleculeRepository.countAllNPBySource("NUBBE"));
+            this.plotData.globalCounts.put("countSTREPTOMEDB", moleculeRepository.countAllNPBySource("STREPTOMEDB"));
+            this.plotData.globalCounts.put("countPUBCHEM", moleculeRepository.countAllNPBySource("PUBCHEM"));
+            this.plotData.globalCounts.put("countNANPDB", moleculeRepository.countAllNPBySource("NANPDB"));
+            this.plotData.globalCounts.put("countCHEBI", moleculeRepository.countAllNPBySource("CHEBI"));
+            this.plotData.globalCounts.put("countNPATLAS", moleculeRepository.countAllNPBySource("NPATLAS"));
+            this.plotData.globalCounts.put("countTCMDB", moleculeRepository.countAllNPBySource("TCMDB"));
+            this.plotData.globalCounts.put("countIBS", moleculeRepository.countAllNPBySource("IBS"));
+            this.plotData.globalCounts.put("countOld2102", moleculeRepository.countAllNPBySource("OLD2012"));
+            this.plotData.globalCounts.put("countZINCNP", moleculeRepository.countAllNPBySource("ZINC"));
+            this.plotData.globalCounts.put("countUNPD", moleculeRepository.countAllNPBySource("UNPD"));
+            this.plotData.globalCounts.put("countSUPERNATURAL", moleculeRepository.countAllNPBySource("SUPERNATURAL"));
+
+
+
             this.plotData.globalCounts.put("countDRUGBANK", moleculeRepository.countAllDrugbank());
+
+
             this.plotData.globalCounts.put("countBacteria", moleculeRepository.countAllNPInBacteria());
             this.plotData.globalCounts.put("countPlants", moleculeRepository.countAllNPInPlants());
             this.plotData.globalCounts.put("countFungi", moleculeRepository.countAllNPInFungi());
+
+            this.plotData.globalCounts.put("countTranche1", moleculeRepository.countAllTranche1());
+            this.plotData.globalCounts.put("countTranche2", moleculeRepository.countAllTranche2());
+            this.plotData.globalCounts.put("countTranche3", moleculeRepository.countAllTranche3());
+            this.plotData.globalCounts.put("countTranche4", moleculeRepository.countAllTranche4());
 
 
 
@@ -667,27 +760,40 @@ public class NPlsWebController {
 
                 //BY DB
 
-                fos = new FileOutputStream("archive/npScoresCHEBI.ser");
+
+                fos = new FileOutputStream("archive/npScoresUEFS.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresCHEBI);
+                oos.writeObject(this.plotData.npScoresUEFS);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresTCMDB.ser");
+                fos = new FileOutputStream("archive/npScoresHIT.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresTCMDB);
+                oos.writeObject(this.plotData.npScoresHIT);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresZINCNP.ser");
+                fos = new FileOutputStream("archive/npScoresSANCDB.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresZINCNP);
+                oos.writeObject(this.plotData.npScoresSANCDB);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresPUBCHEM.ser");
+                fos = new FileOutputStream("archive/npScoresAFRODB.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresPUBCHEM);
+                oos.writeObject(this.plotData.npScoresAFRODB);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresNPACT.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresNPACT);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresSELLECKCHEM.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresSELLECCHEM);
                 oos.close();
                 fos.close();
 
@@ -697,23 +803,83 @@ public class NPlsWebController {
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresNPATLAS.ser");
-                oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresNPATLAS);
-                oos.close();
-                fos.close();
-
                 fos = new FileOutputStream("archive/npScoresNUBBE.ser");
                 oos = new ObjectOutputStream(fos);
                 oos.writeObject(this.plotData.npScoresNUBBE);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresSANCDB.ser");
+                fos = new FileOutputStream("archive/npScoresSTREPTOMEDB.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresSANCDB);
+                oos.writeObject(this.plotData.npScoresSTREPTOMEDB);
                 oos.close();
                 fos.close();
+
+                fos = new FileOutputStream("archive/npScoresPUBCHEM.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresPUBCHEM);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresNANPDB.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresNANPDB);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresCHEBI.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresCHEBI);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresNPATLAS.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresNPATLAS);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresTCMDB.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresTCMDB);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresIBS.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresIBS);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresOLD2012.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresOLD2012);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresZINCNP.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresZINCNP);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresUNPD.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresUNPD);
+                oos.close();
+                fos.close();
+
+                fos = new FileOutputStream("archive/npScoresSUPERNATURAL.ser");
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.plotData.npScoresSUPERNATURAL);
+                oos.close();
+                fos.close();
+
+
+
+
+
+
 
                 fos = new FileOutputStream("archive/npScoresDRUGBANK.ser");
                 oos = new ObjectOutputStream(fos);
@@ -727,23 +893,11 @@ public class NPlsWebController {
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresSUPERNATURAL.ser");
-                oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresSUPERNATURAL);
-                oos.close();
-                fos.close();
 
-                fos = new FileOutputStream("archive/npScoresAFRODB.ser");
-                oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresAFRODB);
-                oos.close();
-                fos.close();
 
-                fos = new FileOutputStream("archive/npScoresOLD2012.ser");
-                oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresOLD2012);
-                oos.close();
-                fos.close();
+
+
+
 
 
                 // BY ORGANISM
@@ -769,27 +923,27 @@ public class NPlsWebController {
 
                 // BY SIZE
 
-                fos = new FileOutputStream("archive/npScoresAC100.ser");
+                fos = new FileOutputStream("archive/npScoresACTranche1.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresAC100);
+                oos.writeObject(this.plotData.npScoresACTranche1);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresAC100200.ser");
+                fos = new FileOutputStream("archive/npScoresACTranche2.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresAC100200);
+                oos.writeObject(this.plotData.npScoresACTranche2);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresAC200300.ser");
+                fos = new FileOutputStream("archive/npScoresACTranche3.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresAC200300);
+                oos.writeObject(this.plotData.npScoresACTranche3);
                 oos.close();
                 fos.close();
 
-                fos = new FileOutputStream("archive/npScoresAC300.ser");
+                fos = new FileOutputStream("archive/npScoresACTranche4.ser");
                 oos = new ObjectOutputStream(fos);
-                oos.writeObject(this.plotData.npScoresAC300);
+                oos.writeObject(this.plotData.npScoresACTranche4);
                 oos.close();
                 fos.close();
 
@@ -825,27 +979,44 @@ public class NPlsWebController {
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresCHEBI.ser");
+
+
+
+
+                fis = new FileInputStream("archive/npScoresUEFS.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresCHEBI = (Hashtable) ois.readObject();
+                this.plotData.npScoresUEFS = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresTCMDB.ser");
+                fis = new FileInputStream("archive/npScoresHIT.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData. npScoresTCMDB = (Hashtable) ois.readObject();
+                this.plotData.npScoresHIT = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresZINCNP.ser");
+                fis = new FileInputStream("archive/npScoresSANCDB.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresZINCNP = (Hashtable) ois.readObject();
+                this.plotData.npScoresSANCDB = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresPUBCHEM.ser");
+                fis = new FileInputStream("archive/npScoresAFRODB.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresPUBCHEM = (Hashtable) ois.readObject();
+                this.plotData.npScoresAFRODB = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresNPACT.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresNPACT = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+
+                fis = new FileInputStream("archive/npScoresSELLECKCHEM.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresSELLECCHEM = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
@@ -855,23 +1026,83 @@ public class NPlsWebController {
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresNPATLAS.ser");
-                ois = new ObjectInputStream(fis);
-                this.plotData.npScoresNPATLAS = (Hashtable) ois.readObject();
-                ois.close();
-                fis.close();
-
                 fis = new FileInputStream("archive/npScoresNUBBE.ser");
                 ois = new ObjectInputStream(fis);
                 this.plotData.npScoresNUBBE = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresSANCDB.ser");
+                fis = new FileInputStream("archive/npScoresSTREPTOMEDB.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresSANCDB = (Hashtable) ois.readObject();
+                this.plotData.npScoresSTREPTOMEDB = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
+
+                fis = new FileInputStream("archive/npScoresPUBCHEM.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresPUBCHEM = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresNANPDB.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresNANPDB = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresCHEBI.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresCHEBI = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresNPATLAS.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresNPATLAS = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresTCMDB.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData. npScoresTCMDB = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresIBS.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData. npScoresIBS = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresOLD2012.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresOLD2012 = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresZINCNP.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresZINCNP = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresUNPD.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresUNPD = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+                fis = new FileInputStream("archive/npScoresSUPERNATURAL.ser");
+                ois = new ObjectInputStream(fis);
+                this.plotData.npScoresSUPERNATURAL = (Hashtable) ois.readObject();
+                ois.close();
+                fis.close();
+
+
+
+
+
+
 
                 fis = new FileInputStream("archive/npScoresDRUGBANK.ser");
                 ois = new ObjectInputStream(fis);
@@ -885,23 +1116,11 @@ public class NPlsWebController {
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresSUPERNATURAL.ser");
-                ois = new ObjectInputStream(fis);
-                this.plotData.npScoresSUPERNATURAL = (Hashtable) ois.readObject();
-                ois.close();
-                fis.close();
 
-                fis = new FileInputStream("archive/npScoresAFRODB.ser");
-                ois = new ObjectInputStream(fis);
-                this.plotData.npScoresAFRODB = (Hashtable) ois.readObject();
-                ois.close();
-                fis.close();
 
-                fis = new FileInputStream("archive/npScoresOLD2012.ser");
-                ois = new ObjectInputStream(fis);
-                this.plotData.npScoresOLD2012 = (Hashtable) ois.readObject();
-                ois.close();
-                fis.close();
+
+
+
 
 
                 fis = new FileInputStream("archive/npScoresBACTERIA.ser");
@@ -923,27 +1142,27 @@ public class NPlsWebController {
                 fis.close();
 
 
-                fis = new FileInputStream("archive/npScoresAC100.ser");
+                fis = new FileInputStream("archive/npScoresACTranche1.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresAC100 = (Hashtable) ois.readObject();
+                this.plotData.npScoresACTranche1 = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresAC100200.ser");
+                fis = new FileInputStream("archive/npScoresACTranche2.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresAC100200 = (Hashtable) ois.readObject();
+                this.plotData.npScoresACTranche2 = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresAC200300.ser");
+                fis = new FileInputStream("archive/npScoresACTranche3.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresAC200300 = (Hashtable) ois.readObject();
+                this.plotData.npScoresACTranche3 = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
-                fis = new FileInputStream("archive/npScoresAC300.ser");
+                fis = new FileInputStream("archive/npScoresACTranche4.ser");
                 ois = new ObjectInputStream(fis);
-                this.plotData.npScoresAC300 = (Hashtable) ois.readObject();
+                this.plotData.npScoresACTranche4 = (Hashtable) ois.readObject();
                 ois.close();
                 fis.close();
 
@@ -1006,38 +1225,58 @@ public class NPlsWebController {
             this.plotData.npYplants.add(this.plotData.npScoresPLANTS.get(i));
         }
 
+
+
+
+
         // X and Y by DB
 
-        //chebi
-        this.plotData.npXchebi.addAll(this.plotData.npScoresCHEBI.keySet());
-        Collections.sort(this.plotData.npXchebi);
+        //UEFS
+        this.plotData.npXchebi.addAll(this.plotData.npScoresUEFS.keySet());
+        Collections.sort(this.plotData.npXuefs);
 
-        for (Double i : this.plotData.npXchebi) {
-            this.plotData.npYchebi.add(this.plotData.npScoresCHEBI.get(i));
+        for (Double i : this.plotData.npXuefs) {
+            this.plotData.npYuefs.add(this.plotData.npScoresUEFS.get(i));
         }
 
-        //TCMDB
-        this.plotData.npXtcmdb.addAll(this.plotData.npScoresTCMDB.keySet());
-        Collections.sort(this.plotData.npXtcmdb);
+        //HIT
+        this.plotData.npXhit.addAll(this.plotData.npScoresHIT.keySet());
+        Collections.sort(this.plotData.npXhit);
 
-        for (Double i : this.plotData.npXtcmdb) {
-            this.plotData.npYtcmdb.add(this.plotData.npScoresTCMDB.get(i));
+        for (Double i : this.plotData.npXhit) {
+            this.plotData.npYhit.add(this.plotData.npScoresHIT.get(i));
         }
 
-        //ZINC NP
-        this.plotData.npXzincnp.addAll(this.plotData.npScoresZINCNP.keySet());
-        Collections.sort(this.plotData.npXzincnp);
+        //SANCDB
+        this.plotData.npXsancdb.addAll(this.plotData.npScoresSANCDB.keySet());
+        Collections.sort(this.plotData.npXsancdb);
 
-        for (Double i : this.plotData.npXzincnp) {
-            this.plotData.npYzincnp.add(this.plotData.npScoresZINCNP.get(i));
+        for (Double i : this.plotData.npXsancdb) {
+            this.plotData.npYsancdb.add(this.plotData.npScoresSANCDB.get(i));
         }
 
-        //PUBCHEM
-        this.plotData.npXpubchem.addAll(this.plotData.npScoresPUBCHEM.keySet());
-        Collections.sort(this.plotData.npXpubchem);
+        //AFRODB
+        this.plotData.npXafrodb.addAll(this.plotData.npScoresAFRODB.keySet());
+        Collections.sort(this.plotData.npXafrodb);
 
-        for (Double i : this.plotData.npXpubchem) {
-            this.plotData.npYpubchem.add(this.plotData.npScoresPUBCHEM.get(i));
+        for (Double i : this.plotData.npXafrodb) {
+            this.plotData.npYafrodb.add(this.plotData.npScoresAFRODB.get(i));
+        }
+
+        //NPACT
+        this.plotData.npXnpact.addAll(this.plotData.npScoresNPACT.keySet());
+        Collections.sort(this.plotData.npXnpact);
+
+        for (Double i : this.plotData.npXnpact) {
+            this.plotData.npYnpact.add(this.plotData.npScoresNPACT.get(i));
+        }
+
+        //SELLECKCHEM
+        this.plotData.npXsellecchem.addAll(this.plotData.npScoresSELLECCHEM.keySet());
+        Collections.sort(this.plotData.npXsellecchem);
+
+        for (Double i : this.plotData.npXsellecchem) {
+            this.plotData.npYsellecchem.add(this.plotData.npScoresSELLECCHEM.get(i));
         }
 
         //CHEMBL
@@ -1048,14 +1287,6 @@ public class NPlsWebController {
             this.plotData.npYchembl.add(this.plotData.npScoresCHEMBL.get(i));
         }
 
-        //NP ATLAS
-        this.plotData.npXnpatlas.addAll(this.plotData.npScoresNPATLAS.keySet());
-        Collections.sort(this.plotData.npXnpatlas);
-
-        for (Double i : this.plotData.npXnpatlas) {
-            this.plotData.npYnpatlas.add(this.plotData.npScoresNPATLAS.get(i));
-        }
-
         //NUBBE
         this.plotData.npXnubbe.addAll(this.plotData.npScoresNUBBE.keySet());
         Collections.sort(this.plotData.npXnubbe);
@@ -1064,13 +1295,98 @@ public class NPlsWebController {
             this.plotData.npYnubbe.add(this.plotData.npScoresNUBBE.get(i));
         }
 
-        //SANCDB
-        this.plotData.npXsancdb.addAll(this.plotData.npScoresSANCDB.keySet());
-        Collections.sort(this.plotData.npXsancdb);
+        //StreptomeDB
+        this.plotData.npXstreptomedb.addAll(this.plotData.npScoresSTREPTOMEDB.keySet());
+        Collections.sort(this.plotData.npXstreptomedb);
 
-        for (Double i : this.plotData.npXsancdb) {
-            this.plotData.npYsancdb.add(this.plotData.npScoresSANCDB.get(i));
+        for (Double i : this.plotData.npXstreptomedb) {
+            this.plotData.npYstreptomedb.add(this.plotData.npScoresSTREPTOMEDB.get(i));
         }
+
+        //PUBCHEM
+        this.plotData.npXpubchem.addAll(this.plotData.npScoresPUBCHEM.keySet());
+        Collections.sort(this.plotData.npXpubchem);
+
+        for (Double i : this.plotData.npXpubchem) {
+            this.plotData.npYpubchem.add(this.plotData.npScoresPUBCHEM.get(i));
+        }
+
+        //NANPDB
+        this.plotData.npXnanpdb.addAll(this.plotData.npScoresNANPDB.keySet());
+        Collections.sort(this.plotData.npXnanpdb);
+
+        for (Double i : this.plotData.npXnanpdb) {
+            this.plotData.npYnanpdb.add(this.plotData.npScoresNANPDB.get(i));
+        }
+
+        //chebi
+        this.plotData.npXchebi.addAll(this.plotData.npScoresCHEBI.keySet());
+        Collections.sort(this.plotData.npXchebi);
+
+        for (Double i : this.plotData.npXchebi) {
+            this.plotData.npYchebi.add(this.plotData.npScoresCHEBI.get(i));
+        }
+
+        //NP ATLAS
+        this.plotData.npXnpatlas.addAll(this.plotData.npScoresNPATLAS.keySet());
+        Collections.sort(this.plotData.npXnpatlas);
+
+        for (Double i : this.plotData.npXnpatlas) {
+            this.plotData.npYnpatlas.add(this.plotData.npScoresNPATLAS.get(i));
+        }
+
+        //TCMDB
+        this.plotData.npXtcmdb.addAll(this.plotData.npScoresTCMDB.keySet());
+        Collections.sort(this.plotData.npXtcmdb);
+
+        for (Double i : this.plotData.npXtcmdb) {
+            this.plotData.npYtcmdb.add(this.plotData.npScoresTCMDB.get(i));
+        }
+
+        //IBS
+        this.plotData.npXibs.addAll(this.plotData.npScoresIBS.keySet());
+        Collections.sort(this.plotData.npXibs);
+
+        for (Double i : this.plotData.npXibs) {
+            this.plotData.npYibs.add(this.plotData.npScoresIBS.get(i));
+        }
+
+        //OLD 2012
+        this.plotData.npXold2012.addAll(this.plotData.npScoresOLD2012.keySet());
+        Collections.sort(this.plotData.npXold2012);
+
+        for (Double i : this.plotData.npXold2012) {
+            this.plotData.npYold2012.add(this.plotData.npScoresOLD2012.get(i));
+        }
+
+        //ZINC NP
+        this.plotData.npXzincnp.addAll(this.plotData.npScoresZINCNP.keySet());
+        Collections.sort(this.plotData.npXzincnp);
+
+        for (Double i : this.plotData.npXzincnp) {
+            this.plotData.npYzincnp.add(this.plotData.npScoresZINCNP.get(i));
+        }
+
+        //UNPD
+        this.plotData.npXunpd.addAll(this.plotData.npScoresUNPD.keySet());
+        Collections.sort(this.plotData.npXunpd);
+
+        for (Double i : this.plotData.npXunpd) {
+            this.plotData.npYunpd.add(this.plotData.npScoresUNPD.get(i));
+        }
+
+        //SUPERNATURAL
+        this.plotData.npXsupernatural.addAll(this.plotData.npScoresSUPERNATURAL.keySet());
+        Collections.sort(this.plotData.npXsupernatural);
+
+        for (Double i : this.plotData.npXsupernatural) {
+            this.plotData.npYsupernatural.add(this.plotData.npScoresSUPERNATURAL.get(i));
+        }
+
+
+
+
+
 
         //DRUGBANK
         this.plotData.npXdrugbank.addAll(this.plotData.npScoresDRUGBANK.keySet());
@@ -1088,61 +1404,40 @@ public class NPlsWebController {
             this.plotData.npYhmdb.add(this.plotData.npScoresHMDB.get(i));
         }
 
-        //OLD 2012
-        this.plotData.npXold2012.addAll(this.plotData.npScoresOLD2012.keySet());
-        Collections.sort(this.plotData.npXold2012);
 
-        for (Double i : this.plotData.npXold2012) {
-            this.plotData.npYold2012.add(this.plotData.npScoresOLD2012.get(i));
+
+
+
+        //BY SIZE IN TRANCHE 1
+        this.plotData.npXacTranche1.addAll(this.plotData.npScoresACTranche1.keySet());
+        Collections.sort(this.plotData.npXacTranche1);
+
+        for (Double i : this.plotData.npXacTranche1) {
+            this.plotData.npYacTranche1.add(this.plotData.npScoresACTranche1.get(i));
         }
 
-        //SUPERNATURAL
-        this.plotData.npXsupernatural.addAll(this.plotData.npScoresSUPERNATURAL.keySet());
-        Collections.sort(this.plotData.npXsupernatural);
+        //BY SIZE IN TRANCHE 2
+        this.plotData.npXacTranche2.addAll(this.plotData.npScoresACTranche2.keySet());
+        Collections.sort(this.plotData.npXacTranche2);
 
-        for (Double i : this.plotData.npXsupernatural) {
-            this.plotData.npYsupernatural.add(this.plotData.npScoresSUPERNATURAL.get(i));
+        for (Double i : this.plotData.npXacTranche2) {
+            this.plotData.npYacTranche2.add(this.plotData.npScoresACTranche2.get(i));
         }
 
-        //AFRODB
-        this.plotData.npXafrodb.addAll(this.plotData.npScoresAFRODB.keySet());
-        Collections.sort(this.plotData.npXafrodb);
+        //BY SIZE IN TRANCHE 3
+        this.plotData.npXacTranche3.addAll(this.plotData.npScoresACTranche3.keySet());
+        Collections.sort(this.plotData.npXacTranche3);
 
-        for (Double i : this.plotData.npXafrodb) {
-            this.plotData.npYafrodb.add(this.plotData.npScoresAFRODB.get(i));
+        for (Double i : this.plotData.npXacTranche3) {
+            this.plotData.npYacTranche3.add(this.plotData.npScoresACTranche3.get(i));
         }
 
+        //BY SIZE IN TRANCHE 4
+        this.plotData.npXacTranche4.addAll(this.plotData.npScoresACTranche4.keySet());
+        Collections.sort(this.plotData.npXacTranche4);
 
-        //BY SIZE LESS THAN 100
-        this.plotData.npXac100.addAll(this.plotData.npScoresAC100.keySet());
-        Collections.sort(this.plotData.npXac100);
-
-        for (Double i : this.plotData.npXac100) {
-            this.plotData.npYac100.add(this.plotData.npScoresAC100.get(i));
-        }
-
-        //BY SIZE LESS 100-200
-        this.plotData.npXac100200.addAll(this.plotData.npScoresAC100200.keySet());
-        Collections.sort(this.plotData.npXac100200);
-
-        for (Double i : this.plotData.npXac100200) {
-            this.plotData.npYac100200.add(this.plotData.npScoresAC100200.get(i));
-        }
-
-        //BY SIZE LESS 200-300
-        this.plotData.npXac200300.addAll(this.plotData.npScoresAC200300.keySet());
-        Collections.sort(this.plotData.npXac200300);
-
-        for (Double i : this.plotData.npXac200300) {
-            this.plotData.npYac200300.add(this.plotData.npScoresAC200300.get(i));
-        }
-
-        //BY SIZE LESS THAN 300
-        this.plotData.npXac300.addAll(this.plotData.npScoresAC300.keySet());
-        Collections.sort(this.plotData.npXac300);
-
-        for (Double i : this.plotData.npXac300) {
-            this.plotData.npYac300.add(this.plotData.npScoresAC300.get(i));
+        for (Double i : this.plotData.npXacTranche4) {
+            this.plotData.npYacTranche4.add(this.plotData.npScoresACTranche4.get(i));
         }
 
 

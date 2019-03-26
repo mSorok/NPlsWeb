@@ -28,14 +28,15 @@ public class OriMolecule implements IMolecule{
     @Column(length=1200)
     private String smiles;
 
-    private Integer atom_number;
+    private Integer heavy_atom_number;
+
+    private Integer total_atom_number;
 
     private String status;
 
     private Integer unique_mol_id;
 
     private Date additionDate;
-
 
 
     @PrePersist
@@ -120,12 +121,20 @@ public class OriMolecule implements IMolecule{
         this.additionDate = additionDate;
     }
 
-    public Integer getAtom_number() {
-        return atom_number;
+    public Integer getHeavy_atom_number() {
+        return heavy_atom_number;
     }
 
-    public void setAtom_number(Integer atom_number) {
-        this.atom_number = atom_number;
+    public void setHeavy_atom_number(Integer heavy_atom_number) {
+        this.heavy_atom_number = heavy_atom_number;
+    }
+
+    public Integer getTotal_atom_number() {
+        return total_atom_number;
+    }
+
+    public void setTotal_atom_number(Integer total_atom_number) {
+        this.total_atom_number = total_atom_number;
     }
 
     public boolean isANP(){
