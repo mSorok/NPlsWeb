@@ -24,7 +24,6 @@ public class SDFReader implements IReader {
 
 
     Hashtable<String, IAtomContainer> molecules;
-    private IteratingSDFReader reader = null;
 
     MoleculeChecker moleculeChecker;
 
@@ -44,7 +43,7 @@ public class SDFReader implements IReader {
 
         try{
 
-            reader = new IteratingSDFReader(new FileInputStream(file), DefaultChemObjectBuilder.getInstance());
+            IteratingSDFReader reader = new IteratingSDFReader(new FileInputStream(file), DefaultChemObjectBuilder.getInstance());
             reader.setSkip(true);
 
             while (reader.hasNext() && count <= 200) {

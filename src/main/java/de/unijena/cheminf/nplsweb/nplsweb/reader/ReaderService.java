@@ -16,8 +16,6 @@ public class ReaderService {
 
     public File molecularFile;
 
-    private boolean acceptFileFormat = false;
-
     private String submittedFileFormat ;
 
 
@@ -27,9 +25,9 @@ public class ReaderService {
 
         System.out.println("\n\n Working on: "+this.molecularFile.getAbsolutePath() + "\n\n");
 
-        this.acceptFileFormat = acceptFile(file);
+        boolean acceptFileFormat = acceptFile(file);
 
-        if(this.acceptFileFormat){
+        if(acceptFileFormat){
             return true;
         }
         else{

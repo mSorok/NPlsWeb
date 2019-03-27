@@ -24,7 +24,6 @@ public class SMILESReader implements IReader {
 
 
     Hashtable<String, IAtomContainer> molecules;
-    private LineNumberReader smilesReader;
 
     MoleculeChecker moleculeChecker;
 
@@ -42,7 +41,7 @@ public class SMILESReader implements IReader {
         String line;
 
         try {
-            smilesReader = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
+            LineNumberReader smilesReader = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
             System.out.println("SMILES reader creation");
 
 
