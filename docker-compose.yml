@@ -1,0 +1,34 @@
+version: '3.2'
+
+services:
+  nplsweb:
+    build: '.'
+    image: npls/nplswebapp:latest
+    container_name: web_npls
+    environment:
+      VIRTUAL_HOST: resistomedb.de
+      VIRTUAL_PORT: 8090
+      LETSENCRYPT_HOST: resistomedb.de
+      LETSENCRYPT_EMAIL: maria.ssorokina@gmail.com
+    volumes:
+      - ./volume:/tmp
+      - ./archive:/archive
+      - ./molimg:/molimg
+
+  npls-mysql-db:
+    container_name: mysql_npls
+    image: mysql:latest
+    restart: always
+    environment:
+        MYSQL_ROOT_PASSWORD: root1234
+        MYSQL_DATABASE: NPLikenessDB
+        MYSQL_ROOT_HOST: '%'
+    volumes:
+      - ./mysql:/mysqldata
+
+
+
+networks:
+ default:
+    external:
+      name: nginx-proxy
