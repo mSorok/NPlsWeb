@@ -1,48 +1,48 @@
+<!--
+  ~ Copyright (c) 2019.
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head lang="en">
     <meta charset="UTF-8"/>
     <title>NP-likeness scorer</title>
     <link rel="stylesheet" href="/css/main.css" />
-
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-
-
     <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
-
-
-
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
-
-
-
-
-
 <body>
 
-
-
-
 <div id="headercheminf">
-
     <a href="https://cheminf.uni-jena.de"><img style="max-width: 100%; max-height:100%;float:right;" src="/img/npls_banner.jpeg"></a>
 </div>
 
 
 <img src="/img/pleasewait.gif" id="waitimg" style="display: none ; position: fixed; top:0;left:0;right:0;bottom:0;margin:auto;z-index: 2;"/>
 
-
 <div id="container">
-
-
-
     <div id="submitFile">
-
         <br>
         <br>
         <h2>About</h2>
@@ -66,8 +66,6 @@
             <li>Draw a molecule</li>
             <li>Visualise the distribution of the NP-likeness score across natural products of public databases and taxonomy (bacteria, fungi and plants)</li>
         </ul>
-
-
 
 
         <h2>Upload a file</h2>
@@ -139,9 +137,6 @@
 
     </div>
 
-
-
-
 </div>
 
 <div id="fill4">
@@ -165,41 +160,12 @@
     </div>
 </div>
 
-
-
-
-
-
 <div th:if="${uncorrectMolecule}">
     <h2 th:text="${uncorrectMolecule}"/>
 </div>
 
 
-
 <script>
-    /*
-        $('.submit-mol-button').click(function(){
-            //alert(ChemDoodle.writeMOL(sketcher.getMolecule()));
-
-
-            $.ajax
-            ({
-                url: '/drawing',
-                data: JSON.stringify(ChemDoodle.writeMOL(sketcher.getMolecule())) ,
-                type: 'POST',
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                error: function(){window.location.href = "/results"; },
-                //error: function(xhr, status, error) {
-
-                  //  alert();
-                //},
-                success: function () {
-                    window.location.href = "/results";
-                }
-            });
-        });
-    */
 
 
     /* ****** SHOW WAITING IMAGE *********** */
@@ -362,17 +328,10 @@
     let globalCounts = /*[[${globalCounts}]]*/ 'default';
 
 
-
-
-
     // data obtained
     // ***************************************
 
-
-
     console.log( Plotly.BUILD );
-
-
     // ***************************************
 
     // ***************************************
@@ -968,70 +927,3 @@
 
 </body>
 </html>
-
-
-
-
-
-<!--
-
-    <div id="chemDoodleSketcher">
-        <h2>Draw a molecule</h2>
-
-        <table>
-
-            <tr><td>
-
-
-                <script>
-
-                    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
-
-                    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 400, {useServices:false, oneMolecule:true});
-                    sketcher.specs.atoms_displayTerminalCarbonLabels_2D = true;
-                    sketcher.specs.atoms_useJMOLColors = true;
-                    sketcher.specs.bonds_clearOverlaps_2D = true;
-                    sketcher.specs.shapes_color = 'c10000';
-
-
-                    sketcher.repaint();
-
-
-                </script>
-
-            </td></tr>
-
-            <tr>
-
-                <td>
-                   <button class="submit-mol-button">Submit molecule</button>
-                </td>
-
-
-            </tr>
-
-
-        </table>
-
-        <br><br><strong>Confidentiality:</strong><br>
-        The molecules are kept confidential and will be deleted after processing.
-
-
-    </div>
--->
-
-
-
-<!--
-    <div id="listSubmittedFiles">
-        <div th:if="${not #lists.isEmpty(files)}">
-            Uploaded files:
-            <ul>
-                <li th:each="file : ${files}">
-                    <a th:href="${file}" th:text="${file}" />
-                </li>
-            </ul>
-        </div>
-
-    </div>
-   -->

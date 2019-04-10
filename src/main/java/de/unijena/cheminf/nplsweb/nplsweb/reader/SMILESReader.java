@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * @author mSorok
+ * Reads SMILES files, processes the molecules and inserts in database
+ */
 public class SMILESReader implements IReader {
-
-
     Hashtable<String, IAtomContainer> molecules;
-
     MoleculeChecker moleculeChecker;
-
 
     public SMILESReader(){
         this.molecules = new Hashtable<String, IAtomContainer>();
@@ -35,15 +35,11 @@ public class SMILESReader implements IReader {
 
     @Override
     public Hashtable<String, IAtomContainer> readMoleculesFromFile(File file) {
-
         int count = 1;
-
         String line;
-
         try {
             LineNumberReader smilesReader = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
             System.out.println("SMILES reader creation");
-
 
             while ((line = smilesReader.readLine()) != null  && count <= 200) {
                 String smiles_names = line;
@@ -62,54 +58,32 @@ public class SMILESReader implements IReader {
                             smiles = line;
                             smiles = smiles.replace("\n", "");
                             id="nb"+count;
-
-
                         }
-
-
-
                         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 
                         IAtomContainer molecule = null;
                         try {
                             molecule = sp.parseSmiles(smiles);
-
-
                             molecule.setProperty("MOL_NUMBER_IN_FILE", file.getName()+" " + Integer.toString(count));
                             molecule.setProperty("ID", id);
                             molecule.setID(id);
-
                             molecule.setProperty("FILE_ORIGIN", file.getName().replace(".smi", ""));
-
-
                             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
                             LocalDate localDate = LocalDate.now();
-
                             molecule.setProperty("ACQUISITION_DATE", dtf.format(localDate));
 
-                            // **************************
                             // ID workaround
-
                             if (molecule.getID() == "" || molecule.getID() == null) {
                                 for (Object p : molecule.getProperties().keySet()) {
                                     if (p.toString().toLowerCase().contains("id")) {
                                         molecule.setID(molecule.getProperty(p.toString()));
-                                        id = molecule.getProperty(p.toString());
                                     }
                                 }
                                 if (molecule.getID() == "" || molecule.getID() == null) {
                                     molecule.setID(molecule.getProperty("MOL_NUMBER_IN_FILE"));
-                                    id = molecule.getProperty("MOL_NUMBER_IN_FILE");
                                 }
-
-
                             }
-                            // **************************
-
-
                             molecule = moleculeChecker.checkMolecule(molecule);
-
                             if(molecule != null) {
                                 try {
                                     List options = new ArrayList();
@@ -117,19 +91,14 @@ public class SMILESReader implements IReader {
                                     options.add(INCHI_OPTION.ChiralFlagOFF);
                                     options.add(INCHI_OPTION.AuxNone);
                                     InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
-
                                     molecule.setProperty("INCHIKEY", gen.getInchiKey());
-
-
                                 } catch (CDKException e) {
                                     Integer totalBonds = molecule.getBondCount();
                                     Integer ib = 0;
                                     while (ib < totalBonds) {
-
                                         IBond b = molecule.getBond(ib);
                                         if (b.getOrder() == IBond.Order.UNSET) {
                                             b.setOrder(IBond.Order.SINGLE);
-
                                         }
                                         ib++;
                                     }
@@ -138,43 +107,28 @@ public class SMILESReader implements IReader {
                                     options.add(INCHI_OPTION.ChiralFlagOFF);
                                     options.add(INCHI_OPTION.AuxNone);
                                     InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
-
                                     molecule.setProperty("INCHIKEY", gen.getInchiKey());
-
                                 }
-
                                 this.molecules.put(molecule.getID(), molecule);
                             }
                             else{
                                 this.molecules.put(molecule.getID(), null);
                             }
-
-
-
-
                         } catch (InvalidSmilesException e) {
                             e.printStackTrace();
                             smilesReader.skip(count - 1);
                         }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     count++;
-
                 }
-
-
             }
             smilesReader.close();
-
-
-
         } catch (IOException ex) {
             System.out.println("Oops ! File not found. Please check if the -in file or -out directory is correct");
             ex.printStackTrace();
         }
-
         System.out.println("Number of molecules in file : "+this.molecules.keySet().size());
         return this.molecules;
     }

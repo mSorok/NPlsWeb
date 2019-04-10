@@ -1,29 +1,37 @@
+<!--
+  ~ Copyright (c) 2019.
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <title>NP-likeness scorer - Results</title>
-
-
-
     <link rel="stylesheet" href="/css/main.css" />
-
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-
-
-
     <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
-
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-
     <link rel="stylesheet" type="text/css" href="/DataTables/datatables.min.css"/>
-
     <script type="text/javascript" src="/DataTables/datatables.min.js"></script>
-
 </head>
 
 
@@ -31,12 +39,9 @@
 
 <body>
 
-
 <div id="headercheminf">
     <a href="https://cheminf.uni-jena.de"><img style="max-width: 100%; max-height:100%;float:right;" src="/img/npls_banner.jpeg"></a>
 </div>
-
-
 
 
 <div id="resultsBody">
@@ -44,7 +49,6 @@
         <br><br><br><br>
         <strong>(Scroll down for scores distribution plot)</strong>
     </div>
-
 
 
     <h2>NPL scores in this session:</h2>
@@ -60,7 +64,6 @@
                 <th>Total heavy atom count</th>
                 <th>Heavy atom count without sugar</th>
                 <th>Present in databases as NP</th>
-                <!--<th>NPL score (with sugar)</th>-->
             </tr>
             </thead>
             <tbody>
@@ -88,7 +91,6 @@
                     </div>
                     <div th:case="*"><p>No</p></div>
                 </td>
-                <!--<td th:text="${  #numbers.formatDecimal(score.getNpl_sugar_score(), 1, 2 )  }"></td>-->
             </tr>
 
             </tbody>
@@ -113,9 +115,7 @@
                 </td>
                 <td>&emsp;&emsp;</td>
                 <td>
-<!--                    <form action="/clear">
-                        <input type="submit"  value="Clear session " style="color: red; text-emphasis: #dc3545" />
-                    </form>-->
+
                 </td>
             </tr>
 
@@ -123,9 +123,7 @@
                 <td></td>
                 <td></td>
                 <td>
-<!--
-                    <small><strong>Removes all computed scores. </strong><br><strong style="color:#FF0000";> Warning! Cannot be undone!</strong></small>
--->
+
                 </td>
             </tr>
         </table>
@@ -138,7 +136,6 @@
     </div>
 
     <div id="npPanel" style="width: 100%; height:700px;"><!-- Plotly chart is inside this DIV --></div>
-
 
     <div>
 
@@ -979,90 +976,6 @@ SCRIPTS
 
     /*]]>*/
 </script>
-
-<!--
-
-&lt;!&ndash; Molecule depiction TODO &ndash;&gt;
-<script th:inline="javascript">
-    /*<![CDATA[*/
-
-
-
-
-
-        let scores = /*[[${scores}]]*/ 'default';
-        window.addEventListener("load", draw);
-        function draw() {
-
-
-
-            for(var i=0; i< scores.length; i++) {
-                let molecule = scores[i];
-                var mol = OCL.Molecule.fromSmiles(molecule["smiles"]);
-
-                let molCanvas = "#canvas" + molecule["umol_id"];
-                console.log(molCanvas);
-                var ctx = document.querySelector(molCanvas).getContext('2d');
-
-
-                var img1 = new Image();
-                img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
-                img1.onload = function() {
-                    img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
-                    ctx.drawImage(img1, 100, 100);
-                    ctx.fillRect(0, 0, 150, 75);
-                }
-
-                img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(mol.toSVG());
-
-            }
-        }
-
-
-
-
-
-
-
-
-    function drawMolecules(OCL) {
-
-        var smilesDrawer=new SmilesDrawer();
-        var canvas=document.createElement('canvas');
-        //console.log(document.getElementsByTagName('resultsTableTable') ) ;//[0].appendChild(canvas)
-
-
-/*
-
-
-        var results=[];
-        var start=new Date();
-        for (var smile of smiles) {
-            console.log(smile);
-            var data = SmilesDrawer.parse(smile);
-            smilesDrawer.draw(data, canvas);
-
-
-            var molecule=OCL.Molecule.fromSmiles(smile);
-            results.push({
-                smiles:smile,
-                svg: molecule.toSVG(200, 150, Math.random.toString(36), {fontWeight: 900}),
-                img: canvas.toDataURL()
-            })
-        }
-
-        API.createData('results', results);
-        API.createData('timePerSVG',(new Date()-start)/smiles.length);
-*/
-
-
-
-
-        /*]]>*/
-    }
-
-</script>
--->
 
 </body>
 </html>

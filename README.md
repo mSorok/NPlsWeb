@@ -56,5 +56,5 @@ The unarchived source code for this project is available at https://github.com/m
 Here can be 
 - modified the MySQL instance the web application connects on (in the application.properties file)
 - modified the maximum number of molecules per submitted file via the web interface (currently max 200 molecules - to modify in the SDF and SMILES readers)
-- ifthe plots need to be recomputed (due to changes in the database): in the NPlsWebController.java change private boolean newPlot = false to true (when the plots recomputed, don't forgive to change the newPlot back to false!).
+- if the plots need to be recomputed (due to changes in the database): in the NPlsWebController.java change private boolean newPlot = false to true (when the plots recomputed, don't forgive to change the newPlot back to false!).
 

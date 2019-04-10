@@ -20,28 +20,26 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * @author mSorok
+ * Reads MOL files, processes the molecules and inserts in database
+ */
+
 public class MOLReader implements IReader {
 
 
     Hashtable<String, IAtomContainer> molecules;
-
     MoleculeChecker moleculeChecker;
-
 
     public MOLReader(){
         this.molecules = new Hashtable<String, IAtomContainer>();
         moleculeChecker = BeanUtil.getBean(MoleculeChecker.class);
-
     }
-
-
 
 
     @Override
     public Hashtable<String, IAtomContainer> readMoleculesFromFile(File file) {
-
         int count = 1;
-
         try{
 
             IteratingSDFReader reader = new IteratingSDFReader(new FileInputStream(file), DefaultChemObjectBuilder.getInstance());
@@ -62,8 +60,6 @@ public class MOLReader implements IReader {
 
                     molecule.setProperty("ACQUISITION_DATE", dtf.format(localDate));
 
-
-                    // **************************
                     // ID workaround
                     String id = "";
                     if (molecule.getID() == "" || molecule.getID() == null) {
@@ -77,14 +73,9 @@ public class MOLReader implements IReader {
                             molecule.setID(molecule.getProperty("MOL_NUMBER_IN_FILE"));
                             id = molecule.getProperty("MOL_NUMBER_IN_FILE");
                         }
-
-
                     }
-                    // **************************
-
 
                     molecule = moleculeChecker.checkMolecule(molecule);
-
 
                     if(molecule != null) {
                         try {
@@ -93,19 +84,14 @@ public class MOLReader implements IReader {
                             options.add(INCHI_OPTION.ChiralFlagOFF);
                             options.add(INCHI_OPTION.AuxNone);
                             InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
-
                             molecule.setProperty("INCHIKEY", gen.getInchiKey());
-
-
                         } catch (CDKException e) {
                             Integer totalBonds = molecule.getBondCount();
                             Integer ib = 0;
                             while (ib < totalBonds) {
-
                                 IBond b = molecule.getBond(ib);
                                 if (b.getOrder() == IBond.Order.UNSET) {
                                     b.setOrder(IBond.Order.SINGLE);
-
                                 }
                                 ib++;
                             }
@@ -114,35 +100,22 @@ public class MOLReader implements IReader {
                             options.add(INCHI_OPTION.ChiralFlagOFF);
                             options.add(INCHI_OPTION.AuxNone);
                             InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
-
                             molecule.setProperty("INCHIKEY", gen.getInchiKey());
-
                         }
-
                         this.molecules.put(molecule.getID(), molecule);
                     }
                     else{
                         this.molecules.put(molecule.getID(), null);
                     }
-
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
                 count++;
-
             }
-
-
-
-
-
-
         } catch (IOException ex) {
-        System.out.println("Oops ! File not found. Please check if the -in file or -out directory is correct");
-        ex.printStackTrace();
-    }
-
+            System.out.println("Oops ! File not found. Please check if the -in file or -out directory is correct");
+            ex.printStackTrace();
+        }
         return this.molecules;
     }
 }

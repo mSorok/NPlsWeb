@@ -6,8 +6,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-// This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
-
 public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
 
@@ -16,13 +14,8 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     Molecule findByInchikey(String inchikey);
 
-
-
     @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE mol_id= :mol_id")
     Integer findAtomCountByMolId(@Param("mol_id") Integer mol_id);
-
-
-
 
     /* NPLS without sugar (classic NPLS) */
 
@@ -37,9 +30,6 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule WHERE is_a_np=0  AND npl_score !=0")
     List<Object[]> getNPLSinSM();
-
-
-
 
 
     // BY DATABASE
@@ -141,8 +131,6 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
 
 
-
-
     /* NPLS with sugar */
 
     @Query(nativeQuery = true, value = "SELECT npl_sugar_score FROM molecule WHERE is_a_np=1 AND npl_score !=0")
@@ -157,14 +145,6 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT MAX(npl_sugar_score) FROM molecule")
     List<Object[]> getMaxNPLSugarScore();
-
-
-
-
-
-
-
-
 
 
 
@@ -207,10 +187,6 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number>=40")
     Integer countAllTranche4();
-
-
-
-
 
 
 }
