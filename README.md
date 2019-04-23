@@ -1,4 +1,4 @@
-#NP-likeness scorer - Web application
+# NP-likeness scorer - Web application
 
 Author: Maria Sorokina, maria.sorokina@uni-jena.de
 

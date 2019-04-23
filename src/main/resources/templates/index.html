@@ -24,9 +24,10 @@
 
 <head lang="en">
     <meta charset="UTF-8"/>
-    <title>NP-likeness scorer</title>
+    <title>NaPLeS</title>
     <link rel="stylesheet" href="/css/main.css" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -139,10 +140,12 @@
 
 </div>
 
+<!--
 <div id="fill4">
     <p>&nbsp;</p>
     <p>&nbsp;</p>
 </div>
+-->
 
 
 <div id="distributions_no_user_score_parent">
@@ -181,7 +184,6 @@
             contentType: "application/json; charset=utf-8",
             error: function(){window.location.href = "/results"; },
             //error: function(xhr, status, error) {
-
             //  alert();
             //},
             success: function () {
@@ -192,12 +194,16 @@
 
     });
 
-    document.getElementById("smiles-button").addEventListener("click", function(evt){
-        document.getElementById("waitimg").style.display = 'block';
+   document.getElementById("smiles-button").addEventListener("click", function(evt){
+        document.getElementById("waitimg").style.display = 'flex';
+        //$('#waitimg').show();
     });
+
+
 
     document.getElementById("files-button").addEventListener("click", function(evt){
         document.getElementById("waitimg").style.display = 'block';
+        //$('#waitimg').show();
     });
 
 

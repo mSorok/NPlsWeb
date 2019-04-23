@@ -121,7 +121,6 @@ public class NpScorerService {
 
 
         }
-
         return this.moleculeIdWithScores;
 
     }
@@ -133,7 +132,7 @@ public class NpScorerService {
         List<UserUploadedMolecule> results = uumr.findAllBySessionid(specificSessionId);
 
         for(UserUploadedMolecule umol : results){
-            umol.setSmiles( umol.getSmiles() ); //TODO prettify smiles
+            umol.setSmiles( umol.getSmiles() );
         }
 
 

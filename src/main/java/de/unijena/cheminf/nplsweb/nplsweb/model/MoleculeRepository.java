@@ -117,16 +117,16 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
 
     //BY SIZE
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule WHERE npl_score !=0 AND molecule.atom_number<30")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule WHERE npl_score !=0 AND molecule.heavy_atom_number<30")
     List<Object[]> getNPLSacTranche1();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number<35 AND molecule.atom_number>=30")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.heavy_atom_number<35 AND molecule.heavy_atom_number>=30")
     List<Object[]> getNPLSacTranche2();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number<40 AND molecule.atom_number>=35")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.heavy_atom_number<40 AND molecule.heavy_atom_number>=35")
     List<Object[]> getNPLSacTranche3();
 
-    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.atom_number>=40")
+    @Query(nativeQuery = true, value = "SELECT npl_score FROM molecule  WHERE npl_score !=0 AND molecule.heavy_atom_number>=40")
     List<Object[]> getNPLSacTranche4();
 
 
@@ -176,16 +176,16 @@ public interface MoleculeRepository extends CrudRepository<Molecule, Integer> {
     Integer countAllDrugbank();
 
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<30")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.heavy_atom_number<30")
     Integer countAllTranche1();
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<35 AND molecule.atom_number>=30")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.heavy_atom_number<35 AND molecule.heavy_atom_number>=30")
     Integer countAllTranche2();
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number<40 AND molecule.atom_number>=35")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.heavy_atom_number<40 AND molecule.heavy_atom_number>=35")
     Integer countAllTranche3();
 
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.atom_number>=40")
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT(mol_id)) FROM molecule WHERE npl_score !=0 AND molecule.heavy_atom_number>=40")
     Integer countAllTranche4();
 
 

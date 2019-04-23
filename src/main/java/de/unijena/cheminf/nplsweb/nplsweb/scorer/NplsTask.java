@@ -60,11 +60,6 @@ public class NplsTask implements Runnable{
 
 
 
-    ElectronDonation model = ElectronDonation.cdk();
-    CycleFinder cycles = Cycles.cdkAromaticSet();
-    Aromaticity aromaticity = new Aromaticity(model, cycles);
-
-
     final LinearSugars linearSugarChains = LinearSugars.getInstance();
 
 
@@ -82,7 +77,6 @@ public class NplsTask implements Runnable{
 
         this.fr =  BeanUtil.getBean(FragmentWithSugarRepository.class);
         this.fro = BeanUtil.getBean(FragmentWithoutSugarRepository.class);
-        //this.cpdRepository = BeanUtil.getBean(MoleculeFragmentCpdRepository.class);
         this.uumr = BeanUtil.getBean(UserUploadedMoleculeRepository.class);
         this.uumfcpd = BeanUtil.getBean(UserUploadedMoleculeFragmentCpdRepository.class);
         this.omr = BeanUtil.getBean(OriMoleculeRepository.class);
@@ -133,11 +127,16 @@ public class NplsTask implements Runnable{
                     List<String> allFragments = generateAtomSignatures(ac, height);
                     Double sugarScoreNP=0.0;
 
+
+                    HashSet<String> unknownFragmentsWithSugar = new HashSet<>();
+
+
                     for (String f : allFragments) {
                         List<FragmentWithSugar> inDBlist = fr.findBySignatureAndHeight(f, height);
                         if(inDBlist.isEmpty()){
                             //means it's the first time we see this fragment
-                            // TODO FIND WHAT TO DO!
+                            unknownFragmentsWithSugar.add(f);
+                            //DO THINGS WITH UNKNOWN FRAGMENT WITH SUGAR
 
                         }
                         else{
@@ -213,8 +212,7 @@ public class NplsTask implements Runnable{
 
                                 if(inDBlist.isEmpty()) {
 
-                                    //TODO new fragment - what to do?
-                                    // add to unknown fragments to a list
+                                    // add to unknown fragments to a list to plot
 
                                     unknownFragments.add(f);
 
@@ -314,6 +312,10 @@ public class NplsTask implements Runnable{
                             }
                             else if(source.equals("NUBBE")){
                                 String [] tab = ori_mol_id.split("\\$");
+                                omsources = omsources + source + ": " + tab[0] + ";";
+                            }
+                            else if(source.equals("PUBCHEM") && ori_mol_id.contains(" ")){
+                                String [] tab = ori_mol_id.split(" ");
                                 omsources = omsources + source + ": " + tab[0] + ";";
                             }
                             else{

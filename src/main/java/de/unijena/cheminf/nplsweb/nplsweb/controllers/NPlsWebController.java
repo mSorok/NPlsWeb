@@ -61,6 +61,8 @@ import java.util.stream.Collectors;
 @Controller
 public class NPlsWebController {
 
+    private boolean newPlot = false;
+
     private final StorageService storageService;
 
     @Autowired
@@ -82,7 +84,7 @@ public class NPlsWebController {
     SessionCleaner sessionCleaner;
 
 
-    private boolean newPlot = false;
+
     private PlotData plotData = new PlotData();
 
     @Autowired
@@ -362,7 +364,7 @@ public class NPlsWebController {
             System.out.println("in results");
 
 
-            //FINDING data for the plot
+            //FILLING data for the plot
             if(!this.plotData.isInitialised){
                 fillPlotData();
             }

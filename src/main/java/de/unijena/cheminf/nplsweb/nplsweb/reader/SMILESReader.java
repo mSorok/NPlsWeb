@@ -12,6 +12,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author mSorok
@@ -37,6 +39,7 @@ public class SMILESReader implements IReader {
     public Hashtable<String, IAtomContainer> readMoleculesFromFile(File file) {
         int count = 1;
         String line;
+        MolecularFormulaManipulator mfm = new MolecularFormulaManipulator();
         try {
             LineNumberReader smilesReader = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
             System.out.println("SMILES reader creation");
@@ -57,7 +60,7 @@ public class SMILESReader implements IReader {
                         else{
                             smiles = line;
                             smiles = smiles.replace("\n", "");
-                            id="nb"+count;
+                            id="";
                         }
                         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 
@@ -80,7 +83,10 @@ public class SMILESReader implements IReader {
                                     }
                                 }
                                 if (molecule.getID() == "" || molecule.getID() == null) {
-                                    molecule.setID(molecule.getProperty("MOL_NUMBER_IN_FILE"));
+                                    //molecule.setID("nb"+molecule.getProperty("MOL_NUMBER_IN_FILE"));
+                                    UUID uidlong = UUID.randomUUID();
+                                    id= uidlong.toString().substring(0,3).toUpperCase()+"- (" + mfm.getString(mfm.getMolecularFormula(molecule) )+")";
+                                    molecule.setID(id);
                                 }
                             }
                             molecule = moleculeChecker.checkMolecule(molecule);
@@ -108,6 +114,9 @@ public class SMILESReader implements IReader {
                                     options.add(INCHI_OPTION.AuxNone);
                                     InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(molecule, options );
                                     molecule.setProperty("INCHIKEY", gen.getInchiKey());
+
+
+
                                 }
                                 this.molecules.put(molecule.getID(), molecule);
                             }

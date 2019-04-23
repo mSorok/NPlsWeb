@@ -24,8 +24,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>NP-likeness scorer - Results</title>
+    <title>NaPLeS - Results</title>
     <link rel="stylesheet" href="/css/main.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <script src="https://www.lactame.com/lib/openchemlib/5.6.1/openchemlib-full.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -46,24 +47,24 @@
 
 <div id="resultsBody">
     <div>
-        <br><br><br><br>
-        <strong>(Scroll down for scores distribution plot)</strong>
+        <br>&nbsp;<br><br><br>
+        <strong>(Scroll down for scores distributions plot and to erase results)</strong>
     </div>
 
 
     <h2>NPL scores in this session:</h2>
     <div id="resultsTable">
 
-        <table id="resultsTableTable" class="display">
+        <table id="resultsTableTable" class="display" style="width:100%">
             <thead>
             <tr>
                 <th>Structure</th>
                 <th>NPls unique id</th>
-                <th>SMILES</th>
+                <th style="max-width: 20%">SMILES</th>
                 <th>NPL score</th>
-                <th>Total heavy atom count</th>
-                <th>Heavy atom count without sugar</th>
-                <th>Present in databases as NP</th>
+                <th>Heavy atom count</th>
+                <th>Heavy atom count (no sugar)</th>
+                <th>In databases as NP</th>
             </tr>
             </thead>
             <tbody>
@@ -201,6 +202,15 @@ SCRIPTS
                         "className": "dt-center",
                         "targets": "_all"
                     }
+                ],
+                "columns": [
+                    null,
+                    null,
+                    { "max-width": "20%" },
+                    null,
+                    null,
+                    null,
+                    null
                 ]
             }
 
