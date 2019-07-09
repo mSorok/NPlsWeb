@@ -27,6 +27,8 @@ public class MoleculeFragmentCpd {
 
     private Integer computed_with_sugar;
 
+    private Integer nbfragmentinmolecule;
+
 
 
 
@@ -68,5 +70,17 @@ public class MoleculeFragmentCpd {
 
     public void setComputed_with_sugar(Integer computed_with_sugar) {
         this.computed_with_sugar = computed_with_sugar;
+    }
+
+    public Integer getComputed_with_sugar() {
+        return computed_with_sugar;
+    }
+
+    public Integer getNbfragmentinmolecule() {
+        return nbfragmentinmolecule;
+    }
+
+    public void setNbfragmentinmolecule(Integer nbfragmentinmolecule) {
+        this.nbfragmentinmolecule = nbfragmentinmolecule;
     }
 }

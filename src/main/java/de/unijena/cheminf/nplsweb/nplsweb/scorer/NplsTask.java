@@ -124,14 +124,14 @@ public class NplsTask implements Runnable{
 
                 if(computeWithSugar){
 
-                    List<String> allFragments = generateAtomSignatures(ac, height);
+                    Hashtable<String, Integer> allFragments = generateCountedAtomSignatures(ac, height);
                     Double sugarScoreNP=0.0;
 
 
                     HashSet<String> unknownFragmentsWithSugar = new HashSet<>();
 
 
-                    for (String f : allFragments) {
+                    for (String f : allFragments.keySet()) {
                         List<FragmentWithSugar> inDBlist = fr.findBySignatureAndHeight(f, height);
                         if(inDBlist.isEmpty()){
                             //means it's the first time we see this fragment
@@ -142,14 +142,16 @@ public class NplsTask implements Runnable{
                         else{
                             FragmentWithSugar inDB = inDBlist.get(0);
 
-                            sugarScoreNP+=inDB.getScoreNP();
+                            sugarScoreNP= sugarScoreNP+ (inDB.getScoreNP()*(double)allFragments.get(f));
 
                             UserUploadedMoleculeFragmentCpd uumFrag = new UserUploadedMoleculeFragmentCpd();
                             uumFrag.setUmol_id(uum.getUmol_id());
                             uumFrag.setUu_id(uum.getUu_id());
                             uumFrag.setSignature(f);
                             uumFrag.setHeight(height);
+                            uumFrag.setFragment_id(inDB.getFragment_id());
                             uumFrag.setComputed_with_sugar(1);
+                            uumFrag.setNbfragmentinmolecule(allFragments.get(f));
                             uumfcpd.save(uumFrag);
 
 
@@ -197,7 +199,7 @@ public class NplsTask implements Runnable{
                     if (sugarlessMolecule != null) {
                         // run the fragments computation on it!
 
-                        List<String> allFragments = generateAtomSignatures(sugarlessMolecule, height);
+                        Hashtable<String, Integer> allFragments = generateCountedAtomSignatures(sugarlessMolecule, height);
                         Double scoreNP=0.0;
                         Double scoreNPnoH= 0.0;
 
@@ -206,7 +208,7 @@ public class NplsTask implements Runnable{
 
                         if(allFragments != null) {
 
-                            for (String f : allFragments) {
+                            for (String f : allFragments.keySet()) {
 
                                 List<FragmentWithoutSugar> inDBlist = fro.findBySignatureAndHeight(f, height);
 
@@ -221,13 +223,15 @@ public class NplsTask implements Runnable{
                                 else {
                                     FragmentWithoutSugar inDB = inDBlist.get(0);
 
-                                    scoreNP = scoreNP+ inDB.getScoreNP() ;
+                                    scoreNP = scoreNP+ (inDB.getScoreNP()*(double)allFragments.get(f)) ;
 
                                     UserUploadedMoleculeFragmentCpd uumFrag = new UserUploadedMoleculeFragmentCpd();
                                     uumFrag.setUmol_id(uum.getUmol_id());
                                     uumFrag.setUu_id(uum.getUu_id());
                                     uumFrag.setSignature(f);
                                     uumFrag.setHeight(height);
+                                    uumFrag.setFragment_id(inDB.getFragment_id());
+                                    uumFrag.setNbfragmentinmolecule(allFragments.get(f));
                                     uumFrag.setComputed_with_sugar(0);
 
                                     //computing the score without fragments centered on H
@@ -517,4 +521,48 @@ public class NplsTask implements Runnable{
     public void setSessionid(String sessionid) {
         this.sessionid = sessionid;
     }
+
+
+
+
+
+    public Hashtable<String, Integer> generateCountedAtomSignatures(IAtomContainer atomContainer, Integer height) {
+
+        List<String> atomSignatures = new ArrayList<>();
+
+        Hashtable<String, Integer> countedAtomSignatures = new Hashtable<>();
+
+
+
+        //atomContainer = calculateAromaticity(atomContainer);
+
+        if(atomContainer !=null && !atomContainer.isEmpty()) {
+
+            for (IAtom atom : atomContainer.atoms()) {
+                try {
+                    AtomSignature atomSignature = new AtomSignature(atom, height, atomContainer);
+                    atomSignatures.add(atomSignature.toCanonicalString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for(String signature : atomSignatures){
+                if(countedAtomSignatures.containsKey(signature)){
+                    countedAtomSignatures.put(signature, countedAtomSignatures.get(signature)+1);
+                }
+                else{
+                    countedAtomSignatures.put(signature,1);
+                }
+
+            }
+
+
+            return countedAtomSignatures;
+        }
+        else{
+            return null;
+        }
+    }
+
 }

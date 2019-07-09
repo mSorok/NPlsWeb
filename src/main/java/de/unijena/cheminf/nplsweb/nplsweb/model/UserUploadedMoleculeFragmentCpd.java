@@ -3,6 +3,14 @@ package de.unijena.cheminf.nplsweb.nplsweb.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name="user_uploaded_molecule_fragment_cpd" ,
+        indexes = {
+                @Index(name = "IDX1", columnList = "umol_id, fragment_id" ) ,
+                @Index(name="IDX2", columnList ="umol_id"),
+                @Index(name="IDX3", columnList="fragment_id"),
+                @Index(name="IDX4", columnList = "height"),
+                @Index(name="IDX5", columnList = "computed_with_sugar"),
+                @Index(name="IDX6", columnList = "signature")})
 public class UserUploadedMoleculeFragmentCpd {
 
     @Id
@@ -22,6 +30,8 @@ public class UserUploadedMoleculeFragmentCpd {
     private Integer height;
 
     private Integer computed_with_sugar;
+
+    private Integer nbfragmentinmolecule;
 
 
 
@@ -83,5 +93,13 @@ public class UserUploadedMoleculeFragmentCpd {
 
     public void setUu_id(String uu_id) {
         this.uu_id = uu_id;
+    }
+
+    public Integer getNbfragmentinmolecule() {
+        return nbfragmentinmolecule;
+    }
+
+    public void setNbfragmentinmolecule(Integer nbfragmentinmolecule) {
+        this.nbfragmentinmolecule = nbfragmentinmolecule;
     }
 }
