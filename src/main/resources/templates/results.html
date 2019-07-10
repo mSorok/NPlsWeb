@@ -40,7 +40,7 @@
 
 <body>
 
-<div id="headercheminf" style="width:100%; height: 25%; min-height: 105px; float:left; margin-bottom: 1%;">
+<div id="headercheminf" >
 
     <a target="_blank" rel="noopener noreferrer"  href="https://cheminf.uni-jena.de" ><img src="/img/cheminf_logo.png" style="float: right; min-width: 300px; max-width: 30%; "></a>
 
@@ -59,12 +59,12 @@
     <h2>NPL scores in this session:</h2>
     <div id="resultsTable">
 
-        <table id="resultsTableTable" class="display" style="width:100%">
+        <table id="resultsTableTable" class="display">
             <thead>
             <tr>
                 <th>Structure</th>
                 <th>NPls unique id</th>
-                <th style="max-width: 20%">SMILES</th>
+                <th>SMILES</th>
                 <th>NPL score</th>
                 <th>Heavy atom count</th>
                 <th>Heavy atom count (no sugar)</th>
@@ -140,7 +140,7 @@
 
     </div>
 
-    <div id="npPanel" style="width: 100%; height:700px;"><!-- Plotly chart is inside this DIV --></div>
+    <div id="npPanel" style="width: 100%; height:700px; float: left;"><!-- Plotly chart is inside this DIV --></div>
 
 
 
@@ -206,9 +206,9 @@ SCRIPTS
     $(document).ready( function () {
         $('#resultsTableTable').DataTable(
             {
-                dom: '<"top"ifl>rt<"bottom"Bp>',
+                dom: '<"top"if>rt<"bottom"Bp>',
                 buttons: [
-                    'colvis', 'excel', 'csv', 'copy'
+                    'colvis', 'csv', 'copy'
                 ],
                 "columnDefs": [
                     {

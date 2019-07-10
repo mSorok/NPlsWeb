@@ -269,6 +269,9 @@ public class NplsTask implements Runnable{
                     }
 
 
+                    if(uum.getTotal_atom_number() != uum.getSugar_free_total_atom_number()){
+                        uum.setContainsSugar(1);
+                    }
 
 
 
@@ -307,10 +310,11 @@ public class NplsTask implements Runnable{
 
 
                     String omsources = "";
+                    HashSet<String> omsourcesset = new HashSet();
                     for(Object[] obj : oriMolecules){
                         String source = obj[0].toString();
                         String ori_mol_id = obj[1].toString();
-                        if(!source.equals("OLD2012")) {
+                        if(!source.equals("OLD2012") && !omsourcesset.contains(source) && omsourcesset.size()<10) {
                             if(source.equals("CHEBI")) {
                                 omsources = omsources + ori_mol_id + ";";
                             }
@@ -325,6 +329,7 @@ public class NplsTask implements Runnable{
                             else{
                                 omsources = omsources + source + ": " + ori_mol_id + ";";
                             }
+                            omsourcesset.add(source);
                         }
 
                     }

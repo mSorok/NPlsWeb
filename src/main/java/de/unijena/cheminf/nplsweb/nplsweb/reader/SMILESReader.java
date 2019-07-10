@@ -85,7 +85,7 @@ public class SMILESReader implements IReader {
                                 if (molecule.getID() == "" || molecule.getID() == null) {
                                     //molecule.setID("nb"+molecule.getProperty("MOL_NUMBER_IN_FILE"));
                                     UUID uidlong = UUID.randomUUID();
-                                    id= uidlong.toString().substring(0,3).toUpperCase()+"- (" + mfm.getString(mfm.getMolecularFormula(molecule) )+")";
+                                    id= uidlong.toString().substring(0,3).toUpperCase()+"-(" + mfm.getString(mfm.getMolecularFormula(molecule) )+")";
                                     molecule.setID(id);
                                 }
                             }

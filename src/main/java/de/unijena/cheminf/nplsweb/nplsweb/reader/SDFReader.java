@@ -10,6 +10,7 @@ import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author mSorok
@@ -38,6 +40,7 @@ public class SDFReader implements IReader {
     @Override
     public Hashtable<String, IAtomContainer> readMoleculesFromFile(File file) {
         int count = 1;
+        MolecularFormulaManipulator mfm = new MolecularFormulaManipulator();
         try{
             IteratingSDFReader reader = new IteratingSDFReader(new FileInputStream(file), DefaultChemObjectBuilder.getInstance());
             reader.setSkip(true);
@@ -62,8 +65,9 @@ public class SDFReader implements IReader {
                             }
                         }
                         if (molecule.getID() == "" || molecule.getID() == null) {
-                            molecule.setID(molecule.getProperty("MOL_NUMBER_IN_FILE"));
-                            id = molecule.getProperty("MOL_NUMBER_IN_FILE");
+                            UUID uidlong = UUID.randomUUID();
+                            id= uidlong.toString().substring(0,3).toUpperCase()+"-(" + mfm.getString(mfm.getMolecularFormula(molecule) )+")";
+                            molecule.setID(id);
                         }
                     }
                     molecule = moleculeChecker.checkMolecule(molecule);

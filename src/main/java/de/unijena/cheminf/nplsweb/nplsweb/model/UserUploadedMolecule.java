@@ -27,9 +27,10 @@ public class UserUploadedMolecule {
 
     private Integer is_in_any_source;
 
+    @Column(length=1200)
     private String sources;
 
-    private Integer addedToMolecule;
+    //private Integer addedToMolecule;
 
     private String depictionLocation;
 
@@ -109,14 +110,14 @@ public class UserUploadedMolecule {
     }
 
 
-    public Integer getAddedToMolecule() {
+  /*  public Integer getAddedToMolecule() {
         return addedToMolecule;
     }
 
     public void setAddedToMolecule(Integer addedToMolecule) {
         this.addedToMolecule = addedToMolecule;
     }
-
+*/
     public Double getNpl_score() {
         return npl_score;
     }
