@@ -6,10 +6,10 @@ services:
     image: npls/nplswebapp:latest
     container_name: web_npls
     environment:
-      VIRTUAL_HOST: resistomedb.de
+      VIRTUAL_HOST: yourURLhere.com
       VIRTUAL_PORT: 8090
-      LETSENCRYPT_HOST: resistomedb.de
-      LETSENCRYPT_EMAIL: maria.ssorokina@gmail.com
+      LETSENCRYPT_HOST: yourURLhere.com
+      LETSENCRYPT_EMAIL: your.mail@here.com
     volumes:
       - ./volume:/tmp
       - ./archive:/archive
