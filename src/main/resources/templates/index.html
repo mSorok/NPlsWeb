@@ -89,6 +89,10 @@
             <p>Bad file type. Files accepted: MOL, SDF, SMI</p>
         </div>
 
+        <div th:if="${fileTooBig}" id="errorDiv">
+            <p>The file is too big. Maximum accepted file size is 500kb</p>
+        </div>
+
         <h2>Paste SMILES string</h2>
         <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles">
             <table>

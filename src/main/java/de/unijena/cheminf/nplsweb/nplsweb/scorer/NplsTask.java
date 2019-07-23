@@ -175,110 +175,120 @@ public class NplsTask implements Runnable{
                  * Computing for molecules with sugar removal
                  */
                 IAtomContainer sugarlessMolecule = null;
-                if(computeWithoutSugar){
+                if(computeWithoutSugar) {
 
 
-                    Double sugarFreeScoreNP=0.0;
-                    Double sugarFreeHfreeScoreNP=0.0;
+                    Double sugarFreeScoreNP = 0.0;
+                    Double sugarFreeHfreeScoreNP = 0.0;
 
                     sugarlessMolecule = removeSugars(ac);
 
-                    uum.setSugar_free_total_atom_number(sugarlessMolecule.getAtomCount());
+                    if(sugarlessMolecule != null){
 
 
-                    int sugarFreeHeavyAtomCount = 0;
-                    for(IAtom a : sugarlessMolecule.atoms()){
-                        if(!a.getSymbol().equals("H")){
-                            sugarFreeHeavyAtomCount=sugarFreeHeavyAtomCount+1;
+                        uum.setSugar_free_total_atom_number(sugarlessMolecule.getAtomCount());
+
+
+                        int sugarFreeHeavyAtomCount = 0;
+                        for (IAtom a : sugarlessMolecule.atoms()) {
+                            if (!a.getSymbol().equals("H")) {
+                                sugarFreeHeavyAtomCount = sugarFreeHeavyAtomCount + 1;
+                            }
                         }
-                    }
-                    uum.setSugar_free_heavy_atom_number(sugarFreeHeavyAtomCount);
+                        uum.setSugar_free_heavy_atom_number(sugarFreeHeavyAtomCount);
 
 
+                        if (sugarlessMolecule != null) {
+                            // run the fragments computation on it!
 
-                    if (sugarlessMolecule != null) {
-                        // run the fragments computation on it!
+                            System.out.println("Molecule only with sugars! "+ uum.getSmiles());
 
-                        Hashtable<String, Integer> allFragments = generateCountedAtomSignatures(sugarlessMolecule, height);
-                        Double scoreNP=0.0;
-                        Double scoreNPnoH= 0.0;
+                            Hashtable<String, Integer> allFragments = generateCountedAtomSignatures(sugarlessMolecule, height);
+                            Double scoreNP = 0.0;
+                            Double scoreNPnoH = 0.0;
 
-                        HashSet<String> unknownFragments = new HashSet<>();
-
-
-                        if(allFragments != null) {
-
-                            for (String f : allFragments.keySet()) {
-
-                                List<FragmentWithoutSugar> inDBlist = fro.findBySignatureAndHeight(f, height);
-
-                                if(inDBlist.isEmpty()) {
-
-                                    // add to unknown fragments to a list to plot
-
-                                    unknownFragments.add(f);
+                            HashSet<String> unknownFragments = new HashSet<>();
 
 
-                                }
-                                else {
-                                    FragmentWithoutSugar inDB = inDBlist.get(0);
+                            if (allFragments != null) {
 
-                                    scoreNP = scoreNP+ (inDB.getScoreNP()*(double)allFragments.get(f)) ;
+                                for (String f : allFragments.keySet()) {
 
-                                    UserUploadedMoleculeFragmentCpd uumFrag = new UserUploadedMoleculeFragmentCpd();
-                                    uumFrag.setUmol_id(uum.getUmol_id());
-                                    uumFrag.setUu_id(uum.getUu_id());
-                                    uumFrag.setSignature(f);
-                                    uumFrag.setHeight(height);
-                                    uumFrag.setFragment_id(inDB.getFragment_id());
-                                    uumFrag.setNbfragmentinmolecule(allFragments.get(f));
-                                    uumFrag.setComputed_with_sugar(0);
+                                    List<FragmentWithoutSugar> inDBlist = fro.findBySignatureAndHeight(f, height);
 
-                                    //computing the score without fragments centered on H
-                                    String signature = inDB.getSignature() ;
-                                    if(!signature.startsWith("[H]")){
+                                    if (inDBlist.isEmpty()) {
+
+                                        // add to unknown fragments to a list to plot
+
+                                        unknownFragments.add(f);
 
 
-                                        scoreNPnoH = scoreNPnoH + scoreNP ;
+                                    } else {
+                                        FragmentWithoutSugar inDB = inDBlist.get(0);
 
+                                        scoreNP = scoreNP + (inDB.getScoreNP() * (double) allFragments.get(f));
+
+                                        UserUploadedMoleculeFragmentCpd uumFrag = new UserUploadedMoleculeFragmentCpd();
+                                        uumFrag.setUmol_id(uum.getUmol_id());
+                                        uumFrag.setUu_id(uum.getUu_id());
+                                        uumFrag.setSignature(f);
+                                        uumFrag.setHeight(height);
+                                        uumFrag.setFragment_id(inDB.getFragment_id());
+                                        uumFrag.setNbfragmentinmolecule(allFragments.get(f));
+                                        uumFrag.setComputed_with_sugar(0);
+
+                                        //computing the score without fragments centered on H
+                                        String signature = inDB.getSignature();
+                                        if (!signature.startsWith("[H]")) {
+
+
+                                            scoreNPnoH = scoreNPnoH + scoreNP;
+
+
+                                        }
+
+                                        uumfcpd.save(uumFrag);
 
                                     }
-
-                                    uumfcpd.save(uumFrag);
-
                                 }
                             }
-                        }
 
-                        sugarFreeScoreNP=scoreNP/ (double)uum.getSugar_free_total_atom_number() ;
+                            sugarFreeScoreNP = scoreNP / (double) uum.getSugar_free_total_atom_number();
 
-                        sugarFreeHfreeScoreNP = scoreNPnoH / (double)uum.getSugar_free_heavy_atom_number();
+                            sugarFreeHfreeScoreNP = scoreNPnoH / (double) uum.getSugar_free_heavy_atom_number();
 
 
-                        if(unknownFragments.isEmpty()){
-                            uum.setUnknown_fragments("no");
-                        }
-                        else{
+                            if (unknownFragments.isEmpty()) {
+                                uum.setUnknown_fragments("no");
+                            } else {
 
-                            uum.setUnknown_fragments("");
-                            for(String uf: unknownFragments){
-                                uum.setUnknown_fragments( uum.getUnknown_fragments()+uf+"; " );
+                                uum.setUnknown_fragments("");
+                                for (String uf : unknownFragments) {
+                                    uum.setUnknown_fragments(uum.getUnknown_fragments() + uf + "; ");
+                                }
                             }
+
                         }
 
+
+                        if (uum.getTotal_atom_number() != uum.getSugar_free_total_atom_number()) {
+                            uum.setContainsSugar(1);
+                        }
+
+
+                        uum.setNpl_score(sugarFreeScoreNP);
+                        uum.setNpl_noh_score(sugarFreeHfreeScoreNP);
+
                     }
-
-
-                    if(uum.getTotal_atom_number() != uum.getSugar_free_total_atom_number()){
+                    else{
+                        uum.setSugar_free_total_atom_number(0);
+                        uum.setSugar_free_heavy_atom_number(0);
                         uum.setContainsSugar(1);
+                        uum.setNpl_score(0.0);
+                        uum.setNpl_noh_score(0.0);
+                        uum.setUnknown_fragments("original");
+
                     }
-
-
-
-                    uum.setNpl_score(sugarFreeScoreNP);
-                    uum.setNpl_noh_score(sugarFreeHfreeScoreNP);
-
-
 
                 }
 
@@ -299,7 +309,13 @@ public class NplsTask implements Runnable{
                 }
 
 
-                uum.setSmiles(smilesGenerator.create(ac));
+                String smiles = smilesGenerator.create(ac);
+                if(smiles.length()>50){
+
+                    String [] ssmiles = smiles.split("(?<=\\G.{50})");
+                    smiles = String.join("  ", ssmiles);
+                }
+                uum.setSmiles(smiles);
 
 
 

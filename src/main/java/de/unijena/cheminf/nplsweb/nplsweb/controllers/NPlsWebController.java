@@ -270,45 +270,52 @@ public class NPlsWebController {
 
 
         if(!file.isEmpty()) {
+            if( file.getSize()> 500000){
+                redirectAttributes.addFlashAttribute("fileTooBig", "File is too big");
 
 
-            storageService.store(file);
-            String loadedFile = "upload-dir/" + file.getOriginalFilename();
+                return "redirect:/";
 
-            if (readerService.startService(loadedFile)) {
+            }
+            else {
 
-                readerService.doWorkWithFile();
 
-                npScorerService.setMolecules(readerService.getMolecules());
+                storageService.store(file);
+                String loadedFile = "upload-dir/" + file.getOriginalFilename();
 
-                String ipAddress = request.getHeader("X-FORWARDED-FOR");
-                if (ipAddress == null) {
-                    ipAddress = request.getRemoteAddr();
+                if (readerService.startService(loadedFile)) {
+
+                    readerService.doWorkWithFile();
+
+                    npScorerService.setMolecules(readerService.getMolecules());
+
+                    String ipAddress = request.getHeader("X-FORWARDED-FOR");
+                    if (ipAddress == null) {
+                        ipAddress = request.getRemoteAddr();
+                    }
+
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                    LocalDate localDate = LocalDate.now();
+                    String userDate = dtf.format(localDate);
+
+                    String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent") + "--" + ipAddress + "--" + userDate;
+
+                    npScorerService.setSesstionId(sessionId);
+
+                    npScorerService.doWork();
+
+                    return "redirect:/results";
+
+                    // read molecules
+                    //launch computation
+
+                } else {
+                    storageService.deleteFile(file);
+                    redirectAttributes.addFlashAttribute("badFileType", "Bad file type! Accepted formats: SDF, MOL & SMI (SMILES)");
+                    return "redirect:/";
                 }
 
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-                LocalDate localDate = LocalDate.now();
-                String userDate = dtf.format(localDate);
-
-                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId() + "--" + request.getHeader("User-Agent")+"--"+ipAddress+"--"+userDate;
-
-                npScorerService.setSesstionId(sessionId);
-
-                npScorerService.doWork();
-
-                return "redirect:/results";
-
-                // read molecules
-                //launch computation
-
-            } else {
-                storageService.deleteFile(file);
-                redirectAttributes.addFlashAttribute("badFileType",
-                        "Bad file type! Accepted formats: SDF, MOL & SMI (SMILES)");
-                return "redirect:/";
             }
-
-
 
         }
         else{

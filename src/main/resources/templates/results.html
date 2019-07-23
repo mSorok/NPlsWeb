@@ -77,18 +77,19 @@
                 <!--
                             <td th:text="${score.getUu_id()}"></td>
                 -->
+                <td th:text="${score.getUu_id()}"></td>
                 <td th:switch="${score.getUnknown_fragments()}">
-                    <div th:case="no"><p th:text="${score.getUu_id()}"></p></div>
-                    <div th:case="*"><p th:text="${score.getUu_id()}"></p> <p style="color:#FF0000";>Warning! contains unknown fragments:</p> <p th:text="${score.getUnknown_fragments()}"></p> </div>
+                    <div th:case="no"><p th:text="${score.getSmiles()}"></p></div>
+                    <div th:case="original"><p th:text="${score.getSmiles()}"></p> <p style="color:#FF0000";>Unexpected case. Please submit this case at <a target="_blank" rel="noopener noreferrer"  href="https://github.com/mSorok/NPlsWeb/issues" style="color: brown">the issues tracker at GitHub</a> </p></div>
+                    <div th:case="*"><p th:text="${score.getSmiles()}"></p> <p style="color:#FF0000";>Warning! contains unknown fragments:</p> <p th:text="${score.getUnknown_fragments()}"></p> </div>
                 </td>
-                <td th:text="${score.getSmiles()}"></td>
                 <td th:text="${  #numbers.formatDecimal(score.getNpl_score(), 1, 2 )  }"></td>
                 <td th:text="${score.getHeavy_atom_number()}"></td>
                 <td th:text="${score.getSugar_free_heavy_atom_number()}"></td>
                 <td th:switch="${score.getIs_in_any_source()}">
                     <div th:case="0"><p>No</p></div>
                     <div th:case="1">
-                        <ul th:each="source : ${#strings.arraySplit(score.getSources(), ';')}" style="list-style-type:none;line-height:40%;text-align:left;">
+                        <ul th:each="source : ${#strings.arraySplit(score.getSources(), ';')}" style="list-style-type:none;line-height:40%;text-align:left;padding-left: 0;"> <!--  -->
 
                             <li th:text="${source}"></li>
 
@@ -212,22 +213,32 @@ SCRIPTS
                 ],
                 "columnDefs": [
                     {
-                        "targets": [ 5 ], //atom number without sugars
+                        "targets": [ 1 ], // ID
+                        "visible": true,
+                        "className": "dt-body-center",
+                    },
+                    {
+                        "targets": [ 2 ], // SMILES
+                        "visible": true,
+                        "className": "dt-body-left",
+                    },
+                    {
+                        "targets": [ 5 ], // atom number without sugars
                         "visible": false
                     },
                     {
-                        "className": "dt-center",
-                        "targets": "_all"
+                        "className": "dt-body-left",
+                        "targets": [ 6 ]
                     }
                 ],
                 "columns": [
                     null,
+                    { "width": "180px"},
+                    { "max-width": "450px"},
                     null,
-                    { "max-width": "20%" },
                     null,
                     null,
-                    null,
-                    null
+                    { "min-width": "250px"}
                 ]
             }
 

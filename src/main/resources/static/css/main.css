@@ -129,15 +129,15 @@ table td {
     margin-right: 10px;
     margin-left: 10px;
     width:100%;
-    min-width: 1200px;
+    min-width: 1000px;
     float: left;
 }
 
 #resultsTable {
     /*<!--border: 1px solid black;-->*/
-    width:96%;
+    width:98%;
     /*max-width: 100%;*/
-    min-width: 1200px;
+    min-width: 1000px;
     float: left;
 
 }
