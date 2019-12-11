@@ -346,7 +346,7 @@ public class NPlsWebController {
             System.out.println("process not finished");
             model.addAttribute("numberOfProcessedMolecules", ""+readerService.getMolecules().keySet().size()+"");
             try {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

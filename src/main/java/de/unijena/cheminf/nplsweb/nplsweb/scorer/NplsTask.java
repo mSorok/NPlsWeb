@@ -5,6 +5,7 @@ import de.unijena.cheminf.nplsweb.nplsweb.misc.BeanUtil;
 import de.unijena.cheminf.nplsweb.nplsweb.misc.LinearSugars;
 import de.unijena.cheminf.nplsweb.nplsweb.model.*;
 
+import de.unijena.cheminf.nplsweb.nplsweb.services.SugarRemovalService;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
@@ -54,13 +55,17 @@ public class NplsTask implements Runnable{
     @Transient
     OriMoleculeRepository omr;
 
+    @Autowired
+    @Transient
+    SugarRemovalService sugarRemovalService;
+
 
     private String sessionid;
 
 
 
 
-    final LinearSugars linearSugarChains = LinearSugars.getInstance();
+    //final LinearSugars linearSugarChains = LinearSugars.getInstance();
 
 
     Hashtable<String,IAtomContainer> moleculesToCompute;
@@ -80,6 +85,7 @@ public class NplsTask implements Runnable{
         this.uumr = BeanUtil.getBean(UserUploadedMoleculeRepository.class);
         this.uumfcpd = BeanUtil.getBean(UserUploadedMoleculeFragmentCpdRepository.class);
         this.omr = BeanUtil.getBean(OriMoleculeRepository.class);
+        this.sugarRemovalService = BeanUtil.getBean(SugarRemovalService.class);
 
         SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Absolute |
                 SmiFlavor.UseAromaticSymbols);
@@ -181,7 +187,8 @@ public class NplsTask implements Runnable{
                     Double sugarFreeScoreNP = 0.0;
                     Double sugarFreeHfreeScoreNP = 0.0;
 
-                    sugarlessMolecule = removeSugars(ac);
+                    //sugarlessMolecule = removeSugars(ac);
+                    sugarlessMolecule = sugarRemovalService.removeSugars(ac);
 
                     if(sugarlessMolecule != null){
 
@@ -413,7 +420,7 @@ public class NplsTask implements Runnable{
     }
 
 
-
+/*
 
     private IAtomContainer removeSugars(IAtomContainer molecule){
 
@@ -472,10 +479,10 @@ public class NplsTask implements Runnable{
 
     }
 
+*/
 
 
-
-
+/*
     private boolean shouldRemoveRing(IAtomContainer possibleSugarRing, IAtomContainer molecule, IRingSet sugarRingsSet) {
 
         boolean shouldRemoveRing = false;
@@ -485,10 +492,10 @@ public class NplsTask implements Runnable{
 
         IRingSet connectedRings = sugarRingsSet.getConnectedRings((IRing) possibleSugarRing);
 
-        /*
+
          * get bonds to check for bond order of connected atoms in a sugar ring
-         *
-         */
+
+
         for (IAtom atom : possibleSugarRing.atoms()) {
             bonds.addAll(molecule.getConnectedBondsList(atom));
         }
@@ -496,9 +503,9 @@ public class NplsTask implements Runnable{
         if (IBond.Order.SINGLE.equals(BondManipulator.getMaximumBondOrder(bonds))
                 && connectedRings.getAtomContainerCount() == 0) {
 
-            /*
-             * get connected atoms of all atoms in sugar ring to check for glycoside bond
-             */
+
+             //* get connected atoms of all atoms in sugar ring to check for glycoside bond
+
             for (IAtom atom : possibleSugarRing.atoms()) {
                 List<IAtom> connectedAtoms = molecule.getConnectedAtomsList(atom);
                 allConnectedAtoms.addAll(connectedAtoms);
@@ -517,6 +524,8 @@ public class NplsTask implements Runnable{
         }
         return shouldRemoveRing;
     }
+
+*/
 
 
     public boolean isComputeWithSugar() {

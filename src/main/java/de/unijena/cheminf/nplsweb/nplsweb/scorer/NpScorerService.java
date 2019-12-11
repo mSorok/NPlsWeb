@@ -76,7 +76,7 @@ public class NpScorerService {
                 System.out.println("Task "+taskcount+" created");
                 task.taskid=taskcount;
 
-                // tod o.add(Executors.callable(task));
+                // todo.add(Executors.callable(task));
 
                 Future<?> f = executor.submit(task);
 
