@@ -2,7 +2,7 @@
 
 Author: Maria Sorokina, maria.sorokina@uni-jena.de
 
-Last modified: 26.03.2019
+Last modified: 06.03.2020
 
 
 This README describes the steps on how to setup and run a local instance of the NP-likeness scorer web application.
@@ -28,6 +28,7 @@ NPlsWeb
 
 ### Prior of running
 - verify that the file NPlikenessDB.sql is in the "mysql" folder
+- compile the project with Maven by running: "mvnv clean package" from the project root
 - verify that there are ".ser" files in the "archive" folder
 - in the docker-compose.yml remplace "VIRTUAL_HOST: nplsscorer.cheminf.uni-jena.de" by "VIRTUAL_HOST: yourwebsite.de" or remove this part to run the web application locally (don't forget to cite us!)
 - in the docker-compose.yml remove "LETSENCRYPT_HOST" and "LETSENCRYPT_EMAIL" unless you want to have your NPLSweb instance to be certified by Let's Encrypt.
