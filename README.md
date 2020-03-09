@@ -27,7 +27,7 @@ NPlsWeb
 ```
 
 ### Prior of running
-- verify that the file NPlikenessDB.sql is in the "mysql" folder
+- verify that the file NPlikenessDB.sql is in the "mysql" folder (can be downloaded here: https://zenodo.org/record/2652356)
 - compile the project with Maven by running: "mvnv clean package" from the project root
 - verify that there are ".ser" files in the "archive" folder
 - in the docker-compose.yml remplace "VIRTUAL_HOST: nplsscorer.cheminf.uni-jena.de" by "VIRTUAL_HOST: yourwebsite.de" or remove this part to run the web application locally (don't forget to cite us!)
