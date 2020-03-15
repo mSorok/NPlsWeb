@@ -44,7 +44,7 @@ public class SMILESReader implements IReader {
             LineNumberReader smilesReader = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
             System.out.println("SMILES reader creation");
 
-            while ((line = smilesReader.readLine()) != null  && count <= 200) {
+            while ((line = smilesReader.readLine()) != null  && count <= 1000) {
                 String smiles_names = line;
                 if(!line.contains("smiles")) {
                     try {

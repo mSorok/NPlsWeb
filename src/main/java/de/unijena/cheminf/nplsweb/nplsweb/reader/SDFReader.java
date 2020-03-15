@@ -45,7 +45,7 @@ public class SDFReader implements IReader {
             IteratingSDFReader reader = new IteratingSDFReader(new FileInputStream(file), DefaultChemObjectBuilder.getInstance());
             reader.setSkip(true);
 
-            while (reader.hasNext() && count <= 200) {
+            while (reader.hasNext() && count <= 1000) {
                 try {
                     IAtomContainer molecule = reader.next();
 

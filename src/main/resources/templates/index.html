@@ -64,7 +64,7 @@
         <br>
         <strong>Four ways to use the NP-likeness scorer:</strong>
         <ul>
-            <li>Upload a molecular file in one of the accepted formats (MOL, SDF or smiles). Maximum 200 molecules per file.</li>
+            <li>Upload a molecular file in one of the accepted formats (MOL, SDF or smiles). Maximum 1000 molecules per file.</li>
             <li>Paste a SMILES string of a molecule</li>
             <li>Draw a molecule</li>
             <li>Visualise the distribution of the NP-likeness score across natural products of public databases and taxonomy (bacteria, fungi and plants)</li>
@@ -75,7 +75,7 @@
         <form id="fileUpload" method="POST" enctype="multipart/form-data" action="/file">
             <table>
                 <tr><td>Molecular file to upload :</td><td><input style="font-size: 18px; font-min-size: 100%" type="file" name="file" id="choose-file-button" /></td></tr>
-                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 200</small></td><td><input type="submit" value="Upload & start scorer"  id="files-button" /></td></tr>
+                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 1000 (can be long)</small></td><td><input type="submit" value="Upload & start scorer"  id="files-button" /></td></tr>
             </table>
         </form>
 
@@ -132,6 +132,7 @@
 
         <br><br><strong>Confidentiality:</strong><br>
         The molecules are kept confidential and can be deleted after processing.
+        <br><strong>Cite us: </strong><a target="_blank" rel="noopener noreferrer"  href="https://link.springer.com/article/10.1186/s13321-019-0378-z" > Sorokina, M., Steinbeck, C. NaPLeS: a natural products likeness scorer—web application and database. J Cheminform 11, 55 (2019).</a>
 
 
     </div>
