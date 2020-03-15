@@ -4,7 +4,7 @@ VOLUME /tmp
 
 COPY target/nplsweb-0.0.1-SNAPSHOT.jar app.jar
 
-COPY target/inchiPet.jar /
+COPY inchiPet.jar /
 
 RUN java -jar inchiPet.jar
 
