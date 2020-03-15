@@ -1,6 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700);
 
 
+
 html, body{
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -36,23 +37,24 @@ table td {
 }
 
 #headertext{
-    color: white;
+    color: #305392;;
     font-size: 48px;
     font-family: 'Roboto', sans-serif;
-    background-color: #305392;
+    /*background-color: #305392;*/
     float: left;
-    width: 100%;
+    width: 98%;
     max-height: 50%;
     min-height: 60px;
     text-align: right;
-    padding-right: 5px;
+    padding-right: 2%;
 }
 
 #headerpic{
     float: right;
     min-width: 300px;
     max-width: 30%;
-    padding-right: 5px;
+    padding-right: 2%;
+
 }
 
 
@@ -67,9 +69,9 @@ table td {
 
 }
 #foot{
-    background-color: #305392;
+    /*background-color: #305392;*/
     text-align:center;
-    color: white;
+    color: #305392;;
     float: left;
     height: 10%;
     min-height: 100px;
