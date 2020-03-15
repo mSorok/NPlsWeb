@@ -37,9 +37,9 @@
 
 <div id="headercheminf">
 
-    <a target="_blank" rel="noopener noreferrer"  href="https://cheminf.uni-jena.de" ><img src="/img/cheminf_logo.png" style="float: right; min-width: 300px; max-width: 30%; "></a>
+    <a target="_blank" rel="noopener noreferrer"  href="https://cheminf.uni-jena.de" ><img id="headerpic" src="/img/cheminf_logo.png"></a>
 
-        <h1 style="color: white; font-size: 48px; font-family: 'Roboto', sans-serif; background-color: #305392; float: left; width: 100%; max-height: 50%; min-height: 60px; text-align: right;">NaPLeS - Natural Product Likeness Score calculator &nbsp;</h1>
+    <h1 id="headertext">NaPLeS - Natural Product Likeness Score calculator &nbsp;</h1>
 </div>
 
 
@@ -47,8 +47,7 @@
 
 <div id="container">
     <div id="submitFile">
-        <br>
-        <br>
+
         <h2>About</h2>
         Natural product-likeness of a molecule, <it>i.e.</it> similarity of this molecule to the structure space covered by natural products,
         is a useful criterion in screening compound libraries and in designing new lead compounds.
@@ -93,14 +92,7 @@
             <p>The file is too big. Maximum accepted file size is 500kb</p>
         </div>
 
-        <h2>Paste SMILES string</h2>
-        <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles">
-            <table>
-                <tr><td>SMILES: </td><td><input type="text" name="smiles" cols="45" /></td></tr>
-                <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" id="smiles-button" style="font-size: 18px; font-min-size: 100%"/></td></tr>
-            </table>
 
-        </form>
 
         <div th:if="${notSmiles}" id="errorDiv">
 
@@ -113,8 +105,7 @@
 
 
     <div id="oclContainer">
-        <br>
-        <br>
+
         <h2>Draw a molecule</h2>
 
         <table>
@@ -147,16 +138,29 @@
 
 </div>
 
+<div id="smilesSubmission">
+    <h2>Paste SMILES string</h2>
+    <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles" style="width: 80%;">
+        <table>
+            <tr><td>SMILES: </td><td><input type="text" name="smiles" cols="100" size="100" /></td></tr>
+            <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" id="smiles-button" style="font-size: 18px; font-min-size: 100%"/></td></tr>
+        </table>
+
+    </form>
+
+</div>
 
 
 <div id="distributions_no_user_score_parent">
 
 
     <h2>Distribution of NP-likeness score across databases, taxonomy and molecular size</h2>
-    <div id="distributions_no_user_score"></div>
+    <div id="npPanel"></div>
 
+</div>
 
-    <div id="bibliography" style="float: left; height: 100px; width: 100%; margin-top: 1%;text-align: left; margin-left: 2%">
+<div id="bottom_content">
+    <div id="bibliography">
         <p>[1] Jayaseelan et al.,  Natural product-likeness score revisited: an open-source, open-data implementation.
             In: BMC Bioinformatics, 13 (1), pp. 106, 2012.</p>
         <p>[2] Peter Ertl et al., Natural Product-likeness Score and Its Application for Prioritization of Compound Libraries.
@@ -164,14 +168,11 @@
     </div>
 
     <div id="foot">
-
         <p><strong>NaPLeS is an open source web application based fully on open data. Source and installation instructions are available at <a target="_blank" rel="noopener noreferrer"  href="https://github.com/mSorok/NPlsWeb" style="color: gold">GitHub</a>.
             Please submit bug reports, feature requests and general issues through <a target="_blank" rel="noopener noreferrer"  href="https://github.com/mSorok/NPlsWeb/issues" style="color: gold">the issues tracker at GitHub</a>.</strong>
-        NaPLeS is developed and maintained by the <a target="_blank" rel="noopener noreferrer"  href="https://cheminf.uni-jena.de" style="color: gold">Steinbeck group</a> at the University Friedrich-Schiller in Jena, Germany.</p>
+            NaPLeS is developed and maintained by the <a target="_blank" rel="noopener noreferrer"  href="https://cheminf.uni-jena.de" style="color: gold">Steinbeck group</a> at the University Friedrich-Schiller in Jena, Germany.</p>
         <p>The code for this web application is released under the MIT license. Data licenses, if available, can be obtained from the home page of the various natural product databases listed above.</p>
     </div>
-
-
 </div>
 
 
@@ -840,7 +841,7 @@
         y: npYacTranche1 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size < 30 atoms (SM & NP - '+globalCounts.countTranche1+')',
+        name: 'size < 30 atoms (SM&NP: '+globalCounts.countTranche1+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -856,7 +857,7 @@
         y: npYacTranche2 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 30 and 35 atoms (SM & NP - '+globalCounts.countTranche2+')',
+        name: 'size between 30 & 35 atoms (SM&NP: '+globalCounts.countTranche2+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -873,7 +874,7 @@
         y: npYacTranche3 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size between 35 and 40 atoms (SM & NP - '+globalCounts.countTranche3+')',
+        name: 'size between 35 & 40 atoms (SM&NP: '+globalCounts.countTranche3+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -889,7 +890,7 @@
         y: npYacTranche4 ,
         //legendgroup: 'bydatabase',
         mode: 'lines',
-        name: 'molecule size >=40 atoms (SM & NP - '+globalCounts.countTranche4+')',
+        name: 'size >=40 atoms (SM&NP: '+globalCounts.countTranche4+')',
         visible: 'legendonly',
         line: {
             shape: 'spline',
@@ -932,11 +933,13 @@
             range: [0,0.1],
             showgrid: false,
         },
-        colorway: 'Rainbow'
+        colorway: 'Rainbow',
+        automargin: true,
+        autosize: true
     };
+    let config = {responsive: true}
 
-
-    Plotly.newPlot('distributions_no_user_score', data, layout);
+    Plotly.newPlot("npPanel", data, layout, config);
 
     // ***************************************
 
