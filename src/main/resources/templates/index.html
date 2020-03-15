@@ -74,8 +74,8 @@
         <h2>Upload a file</h2>
         <form id="fileUpload" method="POST" enctype="multipart/form-data" action="/file">
             <table>
-                <tr><td>Molecular file to upload :</td><td><input style="font-size: 18px; font-min-size: 100%" type="file" name="file" /></td></tr>
-                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 200</small></td><td><input type="submit" value="Upload & start scorer"  id="files-button"  style="font-size: 18px; font-min-size: 100%"/></td></tr>
+                <tr><td>Molecular file to upload :</td><td><input style="font-size: 18px; font-min-size: 100%" type="file" name="file" id="choose-file-button" /></td></tr>
+                <tr><td><small>Accepted formats: SDF, MOL, SMILES.<br />Max number of molecules: 200</small></td><td><input type="submit" value="Upload & start scorer"  id="files-button" /></td></tr>
             </table>
         </form>
 
@@ -121,7 +121,7 @@
             <tr>
 
                 <td>
-                    <button class="submit-mol-button-ocl" style="font-size: 18px; font-min-size: 100%">Submit molecule</button>
+                    <button class="submit-mol-button-ocl"  >Submit molecule</button> <!--style="font-size: 18px; font-min-size: 100%"-->
                 </td>
 
 
@@ -140,10 +140,10 @@
 
 <div id="smilesSubmission">
     <h2>Paste SMILES string</h2>
-    <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles" style="width: 80%;">
+    <form id="smilesUpload" method="POST" enctype="text/plain" action="/smiles" style="width: 80%; padding-left: 1%;">
         <table>
             <tr><td>SMILES: </td><td><input type="text" name="smiles" cols="100" size="100" /></td></tr>
-            <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" id="smiles-button" style="font-size: 18px; font-min-size: 100%"/></td></tr>
+            <tr><td><small>All SMILES types accepted but stereochemistry and isotopes will be ignored</small></td><td><input type="submit" value="Upload & start scorer" id="smiles-button" /></td></tr>
         </table>
 
     </form>

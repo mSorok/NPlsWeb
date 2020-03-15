@@ -51,7 +51,7 @@
 
 
 <div id="resultsBody">
-    <div>
+    <div style="padding-left: 2%;">
         <br>&nbsp;<br><br><br>
         <strong>(Scroll down for scores distributions plot and to erase results)</strong>
     </div>
@@ -108,7 +108,7 @@
     </div>
 
 
-    <div>
+    <div style="margin-left: 2%;">
         <br><br>
         &emsp;
         <br><br>
@@ -117,7 +117,7 @@
             <tr>
                 <td>
                     <form action="/">
-                        <input type="submit" value="Compute new NP-likeness score(s)" style="font-size: 18px; font-min-size: 100%"/>
+                        <input type="submit" value="Compute new NP-likeness score(s)" id="button-new-compute1"/>
                     </form>
                 </td>
                 <td>&emsp;&emsp;</td>
@@ -136,9 +136,9 @@
         </table>
     </div>
 
-    <div>
+    <div id="distributions_with_user_score_parent">
 
-        <strong>Clic on the databases or taxonomic kingdoms to toggle the NP-likeness score distributions</strong>
+        <strong style="padding-left: 1%; padding-top: 1%">Clic on the databases or taxonomic kingdoms to toggle the NP-likeness score distributions</strong>
         <div id="npPanel"><!-- Plotly chart is inside this DIV --></div>
 
     </div>
@@ -148,20 +148,20 @@
 
 
 
-    <div>
+    <div id="recomputeOrClear">
         <br><br>
 
         <table>
             <tr>
                 <td>
                     <form action="/">
-                        <input type="submit" value="Compute new NP-likeness score(s)" style="font-size: 18px; font-min-size: 100%;"/>
+                        <input type="submit" value="Compute new NP-likeness score(s)" id="button-new-compute2"/>
                     </form>
                 </td>
                 <td>&emsp;&emsp;</td>
                 <td>
                     <form action="/clear">
-                        <input type="submit" value="Clear session " style="color: red; text-emphasis: #dc3545; font-size: 18px; font-min-size: 100%;" />
+                        <input type="submit" value="Clear session " id="clear-all-button" />
                     </form>
                 </td>
             </tr>
