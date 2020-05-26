@@ -4,6 +4,11 @@ Author: Maria Sorokina, maria.sorokina@uni-jena.de
 
 Last modified: 06.03.2020
 
+NP-likeness scorer is a web application to compute natural-product-likeness for a given set of molecules. 
+The computation of NP-likeness is based on 
+
+* Sorokina, M., Steinbeck, C. NaPLeS: a natural products likeness scorer—web application and database. J Cheminform 11, 55 (2019). https://doi.org/10.1186/s13321-019-0378-z
+* Vanii Jayaseelan, K., Moreno, P., Truszkowski, A. et al. Natural product-likeness score revisited: an open-source, open-data implementation. BMC Bioinformatics 13, 106 (2012). https://doi.org/10.1186/1471-2105-13-106
 
 This README describes the steps on how to setup and run a local instance of the NP-likeness scorer web application.
 
